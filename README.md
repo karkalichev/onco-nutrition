@@ -218,7 +218,7 @@ onco-nutrition/
 │   ├── processed/           # chunks.jsonl + chroma/ (generated; Chroma backend only)
 │   ├── eval/                # test scenarios
 │   └── raw/user-queries/    # patient interviews
-└── tests/
+└── tests/                   # unit tests — see tests/README.md
 ```
 
 ## CLI flags
@@ -270,6 +270,17 @@ Project docs (`docs/`, root `README`) are in **English**. Archived **RAG source*
 | [docs/decisions/002-rag-approach.md](docs/decisions/002-rag-approach.md) | LangChain + Chroma or pgvector + multilingual embeddings |
 | [docs/decisions/003-two-tier-knowledge.md](docs/decisions/003-two-tier-knowledge.md) | Clinical vs peer |
 | [src/README.md](src/README.md) | Code layout and commands |
+
+## Tests
+
+Unit tests (no API key, no embedding download):
+
+```bash
+pip install -r requirements-dev.txt
+pytest tests/ -q
+```
+
+Covers `PatientContext`, terminology, i18n, retrieval helpers, JSON parsing. See [tests/README.md](tests/README.md).
 
 ## Eval
 

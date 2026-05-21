@@ -54,11 +54,15 @@ python -m src.cli ask "What should I eat when nauseous after chemo?" \
 python -m src.cli ask "Can I eat sweets today?" --corticosteroids --glucose high_recently \
   --comorbidity diabetes --lang en
 
-# 4. Eval smoke (priority checks + optional LLM runs)
+# 4. Unit tests (no API key)
+pip install -r requirements-dev.txt
+pytest tests/ -q
+
+# 5. Eval smoke (priority checks + optional LLM runs)
 python scripts/eval_smoke.py --dry-run
 python scripts/eval_smoke.py   # saves markdown to data/eval/runs/
 
-# 5. Mobile / tablet demo (Streamlit — same Wi‑Fi as laptop)
+# 6. Mobile / tablet demo (Streamlit — same Wi‑Fi as laptop)
 ./scripts/run_demo_mobile.sh
 # or: streamlit run demo_app.py --server.address 0.0.0.0
 # On phone: http://<laptop-ip>:8081  (URL also shown in app sidebar)
