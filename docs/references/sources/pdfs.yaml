@@ -1,0 +1,44 @@
+# Clinical Tier 1 PDFs — download locally; not committed to git.
+# Run: python -m src.cli download-sources
+
+pdfs:
+  - filename: acs-nutrition-during-treatment-bg.pdf
+    url: https://lymphom-bg.com/wp-content/uploads/2019/10/Nutrition-Bg.pdf
+    language: bg
+    publisher: Bulgarian Lymphoma Association (ACS booklet BG)
+
+  - filename: acs-nutrition-during-treatment-en.pdf
+    url: https://www.cancer.org/content/dam/cancer-org/cancer-control/en/booklets-flyers/nutrition-for-the-patient-with-cancer-during-treatment.pdf
+    language: en
+    publisher: American Cancer Society
+
+  - filename: nci-eating-hints.pdf
+    url: https://www.cancer.gov/publications/patient-education/eatinghints.pdf
+    language: en
+    publisher: NCI
+
+  - filename: espen-clinical-nutrition-in-cancer.pdf
+    url: https://www.espen.org/files/ESPEN-Guidelines/ESPEN-practical-guideline-clinical-nutrition-in-cancer.pdf
+    language: en
+    publisher: ESPEN
+
+  - filename: seom-nutrition-guidelines-2018.pdf
+    url: https://link.springer.com/content/pdf/10.1007/s12094-018-02009-3.pdf
+    language: en
+    publisher: SEOM / Springer
+    note: May require browser access; skip if download fails.
+
+  - filename: and-nutrition-therapy-oncology-pq113.pdf
+    url: https://www.andeal.org/vault/pq113.pdf
+    language: en
+    publisher: Academy of Nutrition and Dietetics
+
+  - filename: maw-nutrition-oncology-practice-tool.pdf
+    url: https://nutritioncare.org/wp-content/uploads/2025/07/MAW-Nutrition-for-Oncology-Patients-Practice-Tool.pdf
+    language: en
+    publisher: Nutrition Care Org
+
+  - filename: cancerinfo-digestive-cancer-nutrition-journey.pdf
+    url: https://cancerinfo.bg/wp-content/uploads/2024/05/24shape1lp_myjourney_fv-19-09-23_approved-1.pdf
+    language: bg
+    publisher: CancerInfo.bg

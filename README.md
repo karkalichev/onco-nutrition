@@ -79,6 +79,7 @@ flowchart TB
 
 | Step | Command | Output |
 |------|---------|--------|
+| Download PDFs | `python -m src.cli download-sources` | `docs/references/sources/*.pdf` (local, gitignored) |
 | Ingest | `python -m src.cli ingest` | `data/processed/chunks.jsonl` |
 | Index | `python -m src.cli index` | Chroma dir **or** `onco_chunk_embeddings` in Postgres |
 | Ask | `python -m src.cli ask "…"` | Markdown (CLI) or Streamlit UI |
@@ -99,10 +100,11 @@ cp .env.example .env       # set ANTHROPIC_API_KEY
 ### 2. Knowledge base
 
 ```bash
+python -m src.cli download-sources   # PDFs from official links (not in git)
 python -m src.cli ingest
 ```
 
-Reads `docs/references/` (PDFs + web pages) and writes `data/processed/chunks.jsonl`.
+Reads `docs/references/` (downloaded PDFs + archived web/forums) and writes `data/processed/chunks.jsonl`. PDF URLs are listed in [`docs/references/sources/pdfs.yaml`](docs/references/sources/pdfs.yaml).
 
 ### 3. Vector index (recommended for demo)
 
@@ -290,7 +292,7 @@ python scripts/eval_smoke.py             # full run → data/eval/runs/
 
 References under `docs/references/` are for **educational and retrieval research** in this demo. Archived source files are not edited — terminology normalization applies only to app output (`src/terminology.py`).
 
-**Third-party content:** PDFs, web pages, and forum archives remain the property of their publishers (ACS, NCI, ESPEN, onco.bg, Macmillan, CSN, etc.). They are included to demonstrate a realistic RAG pipeline, not as a license to redistribute those materials. For production use, link to official sources or obtain permission from rights holders.
+**Third-party content:** PDFs are **not committed** — clone the repo, run `download-sources`, and files land locally under `docs/references/sources/`. Web and forum archives in git remain third-party works; use official links where possible. See [`docs/references/sources/README.md`](docs/references/sources/README.md).
 
 **Privacy:** do not commit patient interviews, session notes, or profiles — see `.gitignore` (`data/raw/user-queries/*-session.md`, `data/patient/`).
 

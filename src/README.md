@@ -33,6 +33,7 @@ src/
 pip install -r requirements.txt
 
 # 1. Build knowledge base
+python -m src.cli download-sources   # PDFs from links (local only)
 python -m src.cli ingest
 
 # 2. Vector index (Chroma default, or pgvector — see root README)

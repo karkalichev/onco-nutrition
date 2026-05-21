@@ -16,6 +16,9 @@ __pycache__/
 data/raw/user-queries/*-session.md
 data/raw/user-queries/queries.json
 
+# Clinical PDFs (download: python -m src.cli download-sources)
+docs/references/sources/*.pdf
+
 # Generated chunks (rebuild with: python -m src.cli ingest)
 data/processed/
 

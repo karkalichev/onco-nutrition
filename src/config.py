@@ -4,6 +4,8 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 DOCS_REFERENCES = PROJECT_ROOT / "docs" / "references"
+SOURCES_DIR = DOCS_REFERENCES / "sources"
+SOURCES_PDF_MANIFEST = SOURCES_DIR / "pdfs.yaml"
 DATA_RAW = PROJECT_ROOT / "data" / "raw"
 DATA_PROCESSED = PROJECT_ROOT / "data" / "processed"
 CHUNKS_FILE = DATA_PROCESSED / "chunks.jsonl"

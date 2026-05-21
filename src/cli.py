@@ -7,6 +7,7 @@ import sys
 
 from src.assistant import ask
 from src.i18n import resolve_locale
+from src.ingest.download_sources import download_all_pdfs
 from src.ingest.pipeline import run_ingest
 from src.models import PatientContext
 from src.retrieval.index_build import build_vector_index
@@ -26,6 +27,12 @@ def _build_patient_context(args: argparse.Namespace) -> PatientContext:
         country=args.country,
         city=args.city,
     )
+
+
+def cmd_download_sources(args: argparse.Namespace) -> None:
+    stats = download_all_pdfs(force=args.force)
+    if stats["failed"]:
+        sys.exit(1)
 
 
 def cmd_ingest(args: argparse.Namespace) -> None:
@@ -52,6 +59,17 @@ def cmd_ask(args: argparse.Namespace) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Onco Nutrition Assistant")
     sub = parser.add_subparsers(dest="command", required=True)
+
+    p_dl = sub.add_parser(
+        "download-sources",
+        help="Download clinical PDFs from urls in docs/references/sources/pdfs.yaml",
+    )
+    p_dl.add_argument(
+        "--force",
+        action="store_true",
+        help="Re-download even if the file already exists",
+    )
+    p_dl.set_defaults(func=cmd_download_sources)
 
     p_ingest = sub.add_parser("ingest", help="Build chunks.jsonl from docs/references")
     p_ingest.add_argument(
