@@ -43,6 +43,19 @@ python -m src.cli index
 
 Builds a **Chroma** index with multilingual embeddings (first run downloads ~400MB model). Without an index, `ask` falls back to keyword search.
 
+**Troubleshooting `index` (NumPy / PyTorch errors):** use Python 3.12 and reinstall pinned deps:
+
+```bash
+pip install -r requirements.txt --upgrade
+# Intel Mac (x86_64): PyPI only has torch 2.2.x — requirements.txt pins numpy<2 + transformers<5
+```
+
+If you see `numpy 2.x` + `torch 2.2` warnings, run explicitly:
+
+```bash
+pip install "numpy>=1.26.4,<2" "torch==2.2.2" "transformers>=4.41,<5" "sentence-transformers>=3.3,<4"
+```
+
 ### 4. Ask from the terminal
 
 ```bash
