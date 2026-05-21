@@ -4,6 +4,18 @@ AI assistant for **nutrition during cancer treatment** — with a clear split be
 
 > General nutrition information, not medical advice. Discuss any diet changes with your oncologist or dietitian.
 
+## Portfolio notice (read before use)
+
+This repository is an **engineering portfolio / research demo**. It is **not**:
+
+- a medical device or regulated health product  
+- a substitute for an oncologist, dietitian, or hospital care team  
+- validated for clinical decision-making or individual patient treatment  
+
+Use it to review **architecture** (dual-tier RAG, safety labeling, eval harness), not to make real-world diet or treatment choices.
+
+**Running the app:** you need your own `ANTHROPIC_API_KEY` in `.env` (never commit it). Without a key, `ingest` / `index` still work; `ask` and Streamlit need the API.
+
 ## What it does
 
 Every answer has **four sections**:
@@ -276,4 +288,12 @@ python scripts/eval_smoke.py             # full run → data/eval/runs/
 
 ## Data / sources
 
-References under `docs/references/` are for educational use. Archived sources are not edited — terminology normalization applies only to app output (`src/terminology.py`).
+References under `docs/references/` are for **educational and retrieval research** in this demo. Archived source files are not edited — terminology normalization applies only to app output (`src/terminology.py`).
+
+**Third-party content:** PDFs, web pages, and forum archives remain the property of their publishers (ACS, NCI, ESPEN, onco.bg, Macmillan, CSN, etc.). They are included to demonstrate a realistic RAG pipeline, not as a license to redistribute those materials. For production use, link to official sources or obtain permission from rights holders.
+
+**Privacy:** do not commit patient interviews, session notes, or profiles — see `.gitignore` (`data/raw/user-queries/*-session.md`, `data/patient/`).
+
+## License
+
+Application code in this repository is under the [MIT License](LICENSE). Third-party reference documents are **not** covered by that license; see publishers’ terms.

@@ -4,6 +4,8 @@ Downloaded **2026-05-21** for the `onco-nutrition` project. Use as the domain re
 
 > **Note:** These materials are for educational purposes. They do not replace medical advice from a doctor or dietitian.
 
+> **Copyright:** PDFs and archived pages are third-party works included for portfolio RAG demonstration. Redistributing them outside this research context may require permission from the original publishers. Prefer official download links in production systems.
+
 > **Language:** This README is in English. **Archived content files** under `../web/` (mostly Bulgarian) and `../forums/` (mostly English) are kept in **original language** for RAG — do not translate them in place.
 
 ---
