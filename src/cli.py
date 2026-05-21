@@ -8,6 +8,8 @@ from src.assistant import ask
 from src.i18n import resolve_locale
 from src.ingest.pipeline import run_ingest
 from src.models import PatientContext
+from src.retrieval.index_build import build_vector_index
+from src.retrieval.store import resolve_retrieval_mode
 
 
 def _build_patient_context(args: argparse.Namespace) -> PatientContext:
@@ -25,8 +27,17 @@ def _build_patient_context(args: argparse.Namespace) -> PatientContext:
     )
 
 
-def cmd_ingest(_: argparse.Namespace) -> None:
+def cmd_ingest(args: argparse.Namespace) -> None:
     run_ingest()
+    if args.index:
+        stats = build_vector_index()
+        print(f"  Indexed: {stats['total']} chunks (clinical {stats['clinical']}, peer {stats['peer']})")
+
+
+def cmd_index(args: argparse.Namespace) -> None:
+    stats = build_vector_index(reset=not args.no_reset)
+    print(f"Indexed {stats['total']} chunks (clinical {stats['clinical']}, peer {stats['peer']})")
+    print(f"Retrieval mode: {resolve_retrieval_mode()}")
 
 
 def cmd_ask(args: argparse.Namespace) -> None:
@@ -42,7 +53,20 @@ def main() -> None:
     sub = parser.add_subparsers(dest="command", required=True)
 
     p_ingest = sub.add_parser("ingest", help="Build chunks.jsonl from docs/references")
+    p_ingest.add_argument(
+        "--index",
+        action="store_true",
+        help="Also build Chroma vector index after ingest (downloads embedding model on first run)",
+    )
     p_ingest.set_defaults(func=cmd_ingest)
+
+    p_index = sub.add_parser("index", help="Build Chroma vector index from chunks.jsonl")
+    p_index.add_argument(
+        "--no-reset",
+        action="store_true",
+        help="Append to existing index instead of rebuilding (default: full rebuild)",
+    )
+    p_index.set_defaults(func=cmd_index)
 
     p_ask = sub.add_parser("ask", help="Ask a nutrition question (requires ingest + API key)")
     p_ask.add_argument("question", help="Question in Bulgarian or English")

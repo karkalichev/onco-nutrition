@@ -6,6 +6,11 @@ DOCS_REFERENCES = PROJECT_ROOT / "docs" / "references"
 DATA_RAW = PROJECT_ROOT / "data" / "raw"
 DATA_PROCESSED = PROJECT_ROOT / "data" / "processed"
 CHUNKS_FILE = DATA_PROCESSED / "chunks.jsonl"
+CHROMA_DIR = DATA_PROCESSED / "chroma"
+CHROMA_COLLECTION = "onco_nutrition"
+
+# Multilingual embeddings (BG + EN chunks) — see docs/decisions/002-rag-approach.md
+EMBEDDING_MODEL = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
 
 # Ingest paths by tier (see docs/decisions/003-two-tier-knowledge.md)
 CLINICAL_DIRS = [

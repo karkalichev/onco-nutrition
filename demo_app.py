@@ -10,7 +10,9 @@ import streamlit as st
 from dotenv import load_dotenv
 
 from src.assistant import ask
-from src.config import CHUNKS_FILE
+from src.config import CHROMA_DIR, CHUNKS_FILE
+from src.retrieval.index_build import chroma_ready
+from src.retrieval.store import resolve_retrieval_mode
 from src.i18n import Locale, resolve_locale
 from src.llm import resolve_anthropic_model
 from src.models import PatientContext
@@ -225,6 +227,13 @@ with st.sidebar:
         st.success("Knowledge base OK")
     else:
         st.error(_L("missing_chunks"))
+    mode = resolve_retrieval_mode()
+    if mode == "vector":
+        st.success(f"Retrieval: vector ({CHROMA_DIR.name}/)")
+    else:
+        st.warning("Retrieval: keyword — run `python -m src.cli index` for vector search")
+    if CHUNKS_FILE.exists() and not chroma_ready():
+        st.caption("`python -m src.cli index`")
     if os.getenv("ANTHROPIC_API_KEY"):
         st.success("API key OK")
     else:

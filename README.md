@@ -34,7 +34,16 @@ python -m src.cli ingest
 
 Reads `docs/references/` (PDFs + web pages) and writes `data/processed/chunks.jsonl`.
 
-### 3. Ask from the terminal
+### 3. Vector index (recommended for demo)
+
+```bash
+python -m src.cli index
+# or in one step: python -m src.cli ingest --index
+```
+
+Builds a **Chroma** index with multilingual embeddings (first run downloads ~400MB model). Without an index, `ask` falls back to keyword search.
+
+### 4. Ask from the terminal
 
 ```bash
 python -m src.cli ask "What should I eat when nauseous after chemo?" \
@@ -63,7 +72,7 @@ python -m src.cli ask "Suggest a weekly menu with local seasonal produce." \
 
 > **Location (Phase 2+):** `country` and `city` steer toward seasonal local produce. A curated produce calendar per region is not in the MVP yet — the model uses general knowledge; patients should verify market availability.
 
-### 4. Phone / tablet demo (Streamlit)
+### 5. Phone / tablet demo (Streamlit)
 
 Laptop and phone on the **same Wi‑Fi**:
 
@@ -88,7 +97,7 @@ onco-nutrition/
 │   ├── decisions/           # ADRs (LLM, RAG, two-tier)
 │   └── references/          # Sources (clinical + peer)
 ├── data/
-│   ├── processed/           # chunks.jsonl (generated)
+│   ├── processed/           # chunks.jsonl + chroma/ (generated)
 │   ├── eval/                # test scenarios
 │   └── raw/user-queries/    # patient interviews
 └── tests/
@@ -114,7 +123,14 @@ onco-nutrition/
 # .env
 ANTHROPIC_API_KEY=sk-ant-...
 ANTHROPIC_MODEL=claude-sonnet-4-5   # optional; avoid claude-sonnet-4-20250514 (404)
+RETRIEVAL=auto                      # auto | vector | keyword
 ```
+
+| `RETRIEVAL` | Behavior |
+|-------------|----------|
+| `auto` (default) | Vector if `data/processed/chroma/` exists, else keyword |
+| `vector` | Semantic search (requires `python -m src.cli index`) |
+| `keyword` | Token overlap only |
 
 ## Documentation
 
@@ -123,6 +139,7 @@ ANTHROPIC_MODEL=claude-sonnet-4-5   # optional; avoid claude-sonnet-4-20250514 (
 | [docs/concept.md](docs/concept.md) | Two-tier model, menu, patient context |
 | [docs/architecture.md](docs/architecture.md) | Pipeline, RAG, i18n |
 | [docs/decisions/001-llm-provider.md](docs/decisions/001-llm-provider.md) | Anthropic (Claude) |
+| [docs/decisions/002-rag-approach.md](docs/decisions/002-rag-approach.md) | LangChain + Chroma + multilingual embeddings |
 | [docs/decisions/003-two-tier-knowledge.md](docs/decisions/003-two-tier-knowledge.md) | Clinical vs peer |
 | [src/README.md](src/README.md) | Code layout and commands |
 
@@ -136,10 +153,10 @@ python scripts/eval_smoke.py             # full run → data/eval/runs/
 ## MVP status
 
 - [x] Dual-tier RAG (clinical + peer)
+- [x] Vector RAG (LangChain + Chroma + multilingual embeddings) with keyword fallback
 - [x] Anthropic + structured JSON responses
 - [x] BG + EN
 - [x] PatientContext in CLI and Streamlit
-- [ ] Embeddings RAG (keyword search for now)
 - [ ] Weekly menu + daily override (Phase 2 — example questions work in Q&A mode now)
 - [ ] Seasonal produce data per country/region (beyond LLM general knowledge)
 
