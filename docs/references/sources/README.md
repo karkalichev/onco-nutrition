@@ -21,6 +21,16 @@ See [concept.md](../../concept.md) · [ADR 003](../../decisions/003-two-tier-kno
 
 ---
 
+## Streamlit demo (example)
+
+Dual-tier UI in English: clinical guidelines + peer insights + app meal plan, driven by retrieval over the sources below. Run locally: `./scripts/run_demo_mobile.sh` → `http://<lan-ip>:8081`.
+
+![Streamlit demo — EN UI, daily menu, blood-sugar-aware priority](demo-streamlit-en.png)
+
+*Example inputs: chemotherapy day 3, metallic taste, no appetite, corticosteroids, kidney comorbidity, US / Boca Raton.*
+
+---
+
 ## PDF documents — Tier 1 (`clinical`)
 
 **Not in git.** Manifest: [`pdfs.yaml`](pdfs.yaml)

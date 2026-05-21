@@ -207,13 +207,15 @@ st.set_page_config(
 
 with st.sidebar:
     st.session_state.setdefault("ui_lang", "bg")
-    ui_choice = st.radio(
-        _L("ui_lang"),
+    # Fixed label + key — do NOT use _L() as radio label (it changes with locale and resets widget to bg).
+    st.radio(
+        "UI language / Език на менюто",
         ["bg", "en"],
+        index=0 if st.session_state["ui_lang"] == "bg" else 1,
         format_func=lambda x: "Български" if x == "bg" else "English",
         horizontal=True,
+        key="ui_lang",
     )
-    st.session_state["ui_lang"] = ui_choice
 
     port = os.getenv("STREAMLIT_SERVER_PORT", DEMO_PORT)
     ip = _lan_ip()
@@ -244,10 +246,18 @@ with st.sidebar:
 st.title(_L("title"))
 st.caption(_L("subtitle"))
 
+_response_opts = ["auto", "bg", "en"]
+if "response_lang" not in st.session_state:
+    st.session_state["response_lang"] = st.session_state["ui_lang"]
+_response_default = st.session_state.get("response_lang", st.session_state["ui_lang"])
+if _response_default not in _response_opts:
+    _response_default = "auto"
 lang_response = st.selectbox(
     _L("lang"),
-    options=["auto", "bg", "en"],
+    options=_response_opts,
+    index=_response_opts.index(_response_default),
     format_func=lambda x: _opt_label("response_lang", x),
+    key="response_lang",
 )
 
 question = st.text_area(
@@ -330,7 +340,10 @@ if st.button(_L("submit"), type="primary", use_container_width=True):
     elif not os.getenv("ANTHROPIC_API_KEY"):
         st.error(_L("missing_key"))
     else:
-        locale: Locale | None = None if lang_response == "auto" else lang_response  # type: ignore[assignment]
+        if lang_response == "auto":
+            locale: Locale | None = None
+        else:
+            locale = lang_response  # type: ignore[assignment]
         with st.spinner("Мисля…" if _ui_lang() == "bg" else "Thinking…"):
             try:
                 response = ask(question.strip(), locale=locale, patient=patient)
