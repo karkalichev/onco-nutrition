@@ -1,16 +1,17 @@
 # Summary
-Работя върху onco-nutrition — AI асистент за диетично хранене при онко болни.
 
-**Ключова концепция:** два слоя — (1) официална мед. документация, (2) peer съвети от пациенти — с ясни етикети и disclaimer.
+Working on **onco-nutrition** — an AI assistant for nutrition during cancer treatment.
 
-Stack: Python, Anthropic API, dual-tier RAG pipeline + PatientContext (priority: CALORIES_FIRST | BALANCED | BLOOD_SUGAR_AWARE).
+**Core concept:** two layers — (1) official medical documentation, (2) peer advice from patients — with clear labels and disclaimers.
 
-**Код:** `python -m src.cli ingest` · `python -m src.cli ask "..."` — виж `src/README.md`
+**Stack:** Python, Anthropic API, dual-tier RAG pipeline + PatientContext (priority: `CALORIES_FIRST` | `BALANCED` | `BLOOD_SUGAR_AWARE`).
 
-**Eval:** `python scripts/eval_smoke.py --dry-run` · `data/eval/cases.yaml` (10 сценария)
+**Code:** `python -m src.cli ingest` · `python -m src.cli ask "..."` — see `src/README.md`
 
-**Следва:** user queries в `data/raw/user-queries/` (re-ingest) · Phase 2 седмично меню UI · сезонен календар · LangSmith (optional)
+**Eval:** `python scripts/eval_smoke.py --dry-run` · `data/eval/cases.yaml` (10 scenarios)
 
-**Готово:** vector RAG (Chroma или pgvector), dual-tier, eval smoke (`data/eval/cases.yaml`)
+**Next:** user queries in `data/raw/user-queries/` (re-ingest) · Phase 2 weekly menu UI · seasonal produce calendar · LangSmith (optional)
 
-Виж `docs/concept.md` за продуктовата концепция.
+**Done:** vector RAG (Chroma or pgvector), dual-tier, eval smoke (`data/eval/cases.yaml`)
+
+See `docs/concept.md` for the product concept.

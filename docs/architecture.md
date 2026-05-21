@@ -61,11 +61,11 @@ web/onco-bg, cancerinfo    web/anticancer-bratan
 [Render to user / weekly menu day slot]
 ```
 
-Patient context schema: [concept.md — Patient context](concept.md#patient-context--какво-трябва-да-следим)
+Patient context schema: [concept.md — Patient context](concept.md#patient-context--what-we-track)
 
 **Implemented:** `PatientContext` in [src/models.py](../src/models.py) — CLI flags (`--cycle-day`, `--symptoms`, `--corticosteroids`, …) → `[PATIENT_CONTEXT]` in prompt → `derive_priority()` / `derive_phase_hint()`.
 
-**Display terminology:** archived sources keep original wording; all user-facing LLM output passes through `src/terminology.py` (locale-aware, e.g. BG „строиди“ → „кортикостероиди“, EN vague „steroids“ → „corticosteroids“).
+**Display terminology:** archived sources keep original wording; all user-facing LLM output passes through `src/terminology.py` (locale-aware, e.g. BG colloquial steroid terms → clinical wording; EN vague “steroids” → “corticosteroids”).
 
 **Locales:** BG + EN (`src/i18n.py`). CLI `--lang auto|bg|en`; auto-detects from the question. Prompts, UI labels, disclaimers, and retrieval language preference follow the resolved locale.
 
@@ -82,19 +82,19 @@ Patient context schema: [concept.md — Patient context](concept.md#patient-cont
   "peer": {
     "summary": "...",
     "examples": ["..."],
-    "confidence_note": "Личен опит — не е медицински съвет"
+    "confidence_note": "Personal experience — not medical advice"
   },
   "app_suggestion": {
     "meals": ["..."],
     "hydration": "..."
   },
-  "disclaimer": "Съгласувайте с онколог или диетолог."
+  "disclaimer": "Discuss with your oncologist or dietitian."
 }
 ```
 
 ## Conflict handling
 
-If peer contradicts clinical → clinical wins in `app_suggestion`; peer shown with explicit conflict note. See [concept.md](concept.md#правила-при-конфликт).
+If peer contradicts clinical → clinical wins in `app_suggestion`; peer shown with explicit conflict note. See [concept.md](concept.md#conflict-rules).
 
 ## Decisions
 

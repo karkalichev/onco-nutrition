@@ -1,160 +1,167 @@
-# Събиране на реални user queries
+# Collecting real user queries
 
-Ръководство за срещата с потребителя (онкопациент / близък) — как да събереш естествени въпроси и контекст за MVP на `onco-nutrition`.
+Guide for a meeting with a user (oncology patient / caregiver) — how to collect natural questions and context for the `onco-nutrition` MVP.
 
-**Цел:** 15–30 реални формулировки на български + минимален контекст (симптом, лечение, ограничения).
-
----
-
-## Преди срещата (5 мин)
-
-1. Обясни проекта: AI асистент за **хранене при онко лечение**, не замества лекар/диетолог
-2. Поискай **устно съгласие** за запис на въпроси (без име, без диагноза в детайл ако не иска)
-3. Подготви: телефон/voice memo **или** споделен Google Doc / Notes
-4. Създай файл: `data/raw/user-queries/YYYY-MM-DD-session.md`
+**Goal:** 15–30 real phrasings (English and/or Bulgarian) + minimal context (symptom, treatment, restrictions).
 
 ---
 
-## Скрипт за интервю (~20–30 мин)
+## Before the meeting (5 min)
 
-### 1. Контекст (не за публикуване, само за теб)
-
-| Поле | Пример |
-|------|--------|
-| Роля | пациент / полага грижи |
-| Диагноза (общо) | гърда, колоректален, H&N — без TNM детайли |
-| Етап | преди химио / по време / след / ремисия |
-| Лечение | химио, лъчево, кортикостероиди, комбинирано |
-| **Ден от цикъл** | „3-ти ден след химио“, „ден на инфузията“ |
-| **Съпътстващи** | диабет, висока захар при кортикостероиди |
-| Език | български |
-
-> Не записвай ЕГН, адрес, име на лекар, точни lab стойности (mmol/L).
-
-### 1b. Въпроси за контекст (ново — за меню + захар)
-
-1. *„На кой ден от цикъла си обикновено — ден на химио, 1–2 дни след, или по-добре?“*
-2. *„Получаваш ли кортикостероиди (напр. дексаметазон) — и в тези дни апетитът/захарта различна ли е?“*
-3. *„Имаш ли диабет или лекар казвал ли е за висока кръвна захар?“*
-4. *„Когато кажеш „един ден мога захар, друг не“ — какво е различно в двата дни?“*
-5. *„Следиш ли тегло — губиш ли без да искаш?“*
-
-### 2. Отворени въпроси (най-важни)
-
-Прочети на глас и записвай **точните думи** на отговора:
-
-1. *„Когато имаш проблем с храненето по време на лечението — какво точно питаш? Кого питаш първо?“*
-2. *„Как би формулирал въпрос към телефон/чат, ако имаш гадене и не знаеш какво да ядеш?“*
-3. *„Какво си търсил в Google или Facebook? Копирай ми фразата.“*
-4. *„Какво те дразни в съветите онлайн — какво е грешно или объркващо?“*
-5. *„Има ли храни, които ти помогнаха / влошиха нещата?“*
-6. *„Питал ли си диетолог? Какво ти каза, което си запомнил?“*
-
-### 3. Карта на симптоми (минимум 3 сценария)
-
-Помоли да **ролево** формулира въпрос за всеки ред — както би написал в чат:
-
-| Симптом | Подканящ въпрос |
-|---------|-----------------|
-| Гадене / повръщане | „Представи, че гадиш след химио — какво питаш?“ |
-| Липса на апетит | „Не можеш да ядеш 3 дни — какво питаш?“ |
-| Промяна на вкус | „Всичко има метален вкус — какво питаш?“ |
-| Сухота в устата | „Устата ти е суха и боли — какво питаш?“ |
-| Диария | „Имаш разстройство от лечението — какво питаш?“ |
-| Запек | „Имаш запек от лекарства — какво питаш?“ |
-| Отслабване | „Губиш тегло — какво питаш?“ |
-| Имунитет / инфекция | „Страх те е от инфекция — какво питаш за храна?“ |
-
-### 4. „Лоши“ въпроси (също ценни)
-
-- *„Питал ли си за 'лечебни' диети, супер храни, БРАТ, кето? Какво точно си написал?“*
-- *„Имало ли е момент, в който си получил противоречиви съвети?“*
+1. Explain the project: AI assistant for **nutrition during cancer treatment**, does not replace doctor/dietitian
+2. Ask for **verbal consent** to record questions (no name, no detailed diagnosis if they prefer)
+3. Prepare: phone/voice memo **or** shared Google Doc / Notes
+4. Create file: `data/raw/user-queries/YYYY-MM-DD-session.md`
 
 ---
 
-## Формат за запис
+## Interview script (~20–30 min)
 
-### Markdown (бързо)
+### 1. Context (not for publication, for you only)
+
+
+| Field               | Example                                     |
+| ------------------- | ------------------------------------------- |
+| Role                | patient / caregiver                         |
+| Diagnosis (general) | breast, colorectal, H&N — no TNM details    |
+| Stage               | before chemo / during / after / remission   |
+| Treatment           | chemo, radiation, corticosteroids, combined |
+| **Cycle day**       | “day 3 after chemo”, “infusion day”         |
+| **Comorbidities**   | diabetes, high glucose on steroids          |
+| Language            | English / Bulgarian                         |
+
+
+> Do not record national ID, address, doctor name, exact lab values (mmol/L).
+
+### 1b. Context questions (for menu + glucose)
+
+1. *“Which day of the cycle are you usually on — chemo day, 1–2 days after, or feeling better?”*
+2. *“Are you on corticosteroids (e.g. dexamethasone) — and on those days is appetite/blood sugar different?”*
+3. *“Do you have diabetes or has a doctor mentioned high blood sugar?”*
+4. *“When you say ‘sugar OK one day, not the next’ — what is different between those days?”*
+5. *“Are you tracking weight — losing without trying?”*
+
+### 2. Open questions (most important)
+
+Read aloud and record **their exact words**:
+
+1. *“When you have a problem with eating during treatment — what exactly do you ask? Who do you ask first?”*
+2. *“How would you phrase a question to a phone/chat app if you’re nauseous and don’t know what to eat?”*
+3. *“What did you search on Google or Facebook? Copy the phrase for me.”*
+4. *“What annoys you about advice online — what is wrong or confusing?”*
+5. *“Are there foods that helped / made things worse?”*
+6. *“Have you asked a dietitian? What did they say that you remember?”*
+
+### 3. Symptom map (at least 3 scenarios)
+
+Ask them to **role-play** a question for each row — as they would type in chat:
+
+
+| Symptom              | Prompt                                                         |
+| -------------------- | -------------------------------------------------------------- |
+| Nausea / vomiting    | “Imagine you’re nauseous after chemo — what do you ask?”       |
+| No appetite          | “You haven’t eaten properly for 3 days — what do you ask?”     |
+| Taste change         | “Everything tastes metallic — what do you ask?”                |
+| Dry mouth            | “Your mouth is dry and sore — what do you ask?”                |
+| Diarrhea             | “You have treatment-related diarrhea — what do you ask?”       |
+| Constipation         | “You’re constipated from medication — what do you ask?”        |
+| Weight loss          | “You’re losing weight — what do you ask?”                      |
+| Immunity / infection | “You’re worried about infection — what do you ask about food?” |
+
+
+### 4. “Bad” questions (also valuable)
+
+- *“Have you asked about ‘healing’ diets, superfoods, BRAT, keto? What exactly did you type?”*
+- *“Was there a time you got contradictory advice?”*
+
+---
+
+## Recording format
+
+### Markdown (quick)
 
 ```markdown
 ## Query 001
-- **text:** "Какво мога да ям когато ме гади след химио?"
+- **text:** "What can I eat when I'm nauseous after chemo?"
 - **symptom:** nausea
 - **treatment_phase:** during_chemo
-- **language:** bg
+- **language:** en
 - **source:** user_interview
 - **date:** 2026-05-22
-- **notes:** иска нещо лесно, без мирис
+- **notes:** wants easy, low odor
 
 ## Query 002
 ...
 ```
 
-### JSON (за pipeline по-късно)
+### JSON (for pipeline later)
 
-Запази в `data/raw/user-queries/queries.json`:
+Save in `data/raw/user-queries/queries.json`:
 
 ```json
 [
   {
     "id": "uq-001",
-    "text": "Какво мога да ям когато ме гади след химио?",
+    "text": "What can I eat when I'm nauseous after chemo?",
     "symptom": ["nausea"],
     "treatment_phase": "during_chemo",
-    "language": "bg",
+    "language": "en",
     "source": "user_interview",
     "date": "2026-05-22",
     "expected_topics": ["small_frequent_meals", "bland_foods", "cold_foods"],
-    "notes": "иска нещо лесно, без мирис"
+    "notes": "wants easy, low odor"
   }
 ]
 ```
 
-### CSV (ако предпочита таблица)
+### CSV (if you prefer a spreadsheet)
 
 ```csv
 id,text,symptom,treatment_phase,language,date,notes
-uq-001,"Какво мога да ям когато ме гади след химио?",nausea,during_chemo,bg,2026-05-22,"без мирис"
+uq-001,"What can I eat when I'm nauseous after chemo?",nausea,during_chemo,en,2026-05-22,"low odor"
 ```
 
 ---
 
-## След срещата (10 мин)
+## After the meeting (10 min)
 
-1. **Transcribe** — прехвърли гласовия запис в `text` полетата
-2. **Tag** — маркирай симптом(и) от списъка в `week-01.md`
-3. **Test** — пусни 3–5 queries през `test.py` / prompt-а и виж дали отговорът е полезен
-4. **Compare** — сравни с форумни фрази в `docs/references/forums/` — съвпада ли езикът?
+1. **Transcribe** — move voice recording into `text` fields
+2. **Tag** — mark symptom(s) from the list in `week-01.md`
+3. **Test** — run 3–5 queries through `python -m src.cli ask` and check usefulness
+4. **Compare** — with forum phrases in `docs/references/forums/` — does language match?
 
 ---
 
-## Минимален успех за утре
+## Minimum success
 
-| Метрика | Цел |
-|---------|-----|
-| Реални въпроси (BG) | ≥ 10 |
-| Покрити симптоми | ≥ 3 различни |
-| Контекст (лечение/етап) | поне общо, без PHI |
-| „Лоши“/edge case въпроси | ≥ 2 (добавки, „лечебни“ диети) |
+
+| Metric                      | Target                       |
+| --------------------------- | ---------------------------- |
+| Real questions              | ≥ 10                         |
+| Symptoms covered            | ≥ 3 different                |
+| Context (treatment/stage)   | general only, no PHI         |
+| “Bad” / edge-case questions | ≥ 2 (supplements, fad diets) |
+
 
 ---
 
 ## Privacy
 
-- **Не commit-вай** имена, телефони, адреси, номера на болници
-- `data/raw/` → добави в `.gitignore` ако съдържа чувствителни данни
-- За demo използвай **анонимизирани** или **синтетично преформулирани** queries
+- **Do not commit** names, phones, addresses, hospital IDs
+- `data/raw/` — sensitive session files are gitignored
+- For demo use **anonymized** or **synthetically rephrased** queries
 
 ---
 
-## Бърз template файл
+## Quick template
 
-Копирай и попълни: [`data/raw/user-queries/TEMPLATE.md`](../../data/raw/user-queries/TEMPLATE.md)
+Copy and fill in: `[data/raw/user-queries/TEMPLATE.md](../data/raw/user-queries/TEMPLATE.md)`
 
 ---
 
-## Свързани ресурси
+## Related resources
 
-- [Каталог общности](references/communities.md) — откъде идват peer фрази на EN
-- [PDF/Web източници](references/sources/README.md) — evidence base за отговори
-- [Week 01 — симптоми](weekly/week-01.md)
+- [Communities catalog](references/communities.md) — where EN peer phrases come from
+- [PDF/Web sources](references/sources/README.md) — evidence base for answers
+- [Week 01 — symptoms](weekly/week-01.md)
+

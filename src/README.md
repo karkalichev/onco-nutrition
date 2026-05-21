@@ -44,7 +44,7 @@ python -m src.cli index
 python -m src.cli ask "What should I eat when nauseous after chemo?" \
   --symptoms nausea --cycle-day 2 --weight-trend losing --lang en
 
-python -m src.cli ask "дневно меню" --symptoms nausea --cycle-day 2 --lang bg --verbose
+python -m src.cli ask "What should I eat today?" --symptoms nausea --cycle-day 2 --lang en --verbose
 # timing on stderr: load store, retrieve, LLM
 
 python -m src.cli ask "What should I eat when nauseous after chemo?" \

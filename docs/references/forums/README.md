@@ -7,6 +7,8 @@ Public patient discussions about nutrition during cancer treatment.
 > Cross-check conflicts against Tier 1 in `../sources/`.  
 > See [concept.md](../../concept.md).
 
+> **Language:** Thread **content** is kept in original English (CSN/Macmillan). This README is in English.
+
 ## CSN (Cancer Survivors Network) — ⚠️ closes 2026-05-28
 
 | File | Topic |
@@ -28,6 +30,6 @@ Public patient discussions about nutrition during cancer treatment.
 
 ## UI label when citing
 
-> **Това споделят други пациенти** — личен опит, не медицински съвет. Съгласувайте с лекар.
+> **What other patients share** — personal experience, not medical advice. Discuss with your doctor.
 
 See also: [communities catalog](../communities.md) · [sources Tier 1](../sources/README.md)

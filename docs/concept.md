@@ -1,222 +1,222 @@
-# Концепция: Onco Nutrition Assistant
+# Concept: Onco Nutrition Assistant
 
-AI асистент за хранене при онкологично лечение — с **два ясно разделени слоя на знание** и единен, честен UX.
-
----
-
-## Проблемът
-
-Онкопациентите търсят хранителни съвети на две места:
-
-1. **Официални насоки** — ACS, NCI, ESPEN, болнични листовки, onco.bg
-2. **Peer опит** — Facebook групи, форуми, „при мен помогна X“
-
-Двете често **противоречат** (напр. „яж каквото искаш“ vs „избягвай антиоксиданти“ vs „BRAТ диета“). Един flat RAG без етикети е опасен — потребителят не знае какво е медицина и какво е анекдот.
+AI assistant for **nutrition during cancer treatment** — with **two clearly separated knowledge layers** and a single, honest UX. The product is **bilingual (English + Bulgarian)** in code and content; the **demo and portfolio narrative are English-first**.
 
 ---
 
-## Решението: двустепенен модел
+## The problem
+
+Oncology patients look for nutrition advice in two places:
+
+1. **Official guidelines** — ACS, NCI, ESPEN, hospital handouts, onco.bg
+2. **Peer experience** — Facebook groups, forums, “what worked for me”
+
+They often **conflict** (e.g. “eat whatever you can” vs “avoid antioxidants” vs “BRAT-style diets”). A flat RAG stack without labels is risky — users cannot tell medicine from anecdote.
+
+---
+
+## The solution: two-tier model
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    ОТГОВОР НА АСИСТЕНТА                      │
+│                    ASSISTANT RESPONSE                        │
 ├──────────────────────────┬──────────────────────────────────┤
-│  СЛОЙ 1 — КЛИНИЧЕН       │  СЛОЙ 2 — PEER / ПАЦИЕНТСКИ     │
-│  (официална документация) │  (отзиви и споделен опит)        │
+│  LAYER 1 — CLINICAL       │  LAYER 2 — PEER / PATIENT       │
+│  (official documentation) │  (reviews and shared experience)  │
 ├──────────────────────────┼──────────────────────────────────┤
-│  Доверие: авторитетно     │  Доверие: ориентир, не факт      │
-│  Източници: насоки,       │  Източници: форуми, интервюта, │
-│  patient booklets от      │  „при мен“, практични трикове    │
-│  мед. организации         │                                  │
+│  Trust: authoritative     │  Trust: orientation, not fact     │
+│  Sources: guidelines,     │  Sources: forums, interviews,    │
+│  patient booklets from    │  “what worked for me”, practical  │
+│  medical organizations    │  tips                             │
 ├──────────────────────────┼──────────────────────────────────┤
-│  UI етикет:               │  UI етикет:                      │
-│  „Препоръчано от          │  „Това споделят други пациенти“  │
-│   медицински насоки“      │  + предупреждение                │
+│  UI label:                │  UI label:                       │
+│  “Recommended from         │  “What other patients share”     │
+│   clinical guidelines”    │  + warning                        │
 └──────────────────────────┴──────────────────────────────────┘
                               ↓
-              „Приложението предлага…“  (синтез)
+              “What the app suggests…” (synthesis)
                               ↓
-              „Съгласувайте с вашия лекар или диетолог.“
+              “Discuss changes with your oncologist or dietitian.”
 ```
 
-### Слой 1 — Клиничен (`tier: clinical`)
+### Layer 1 — Clinical (`tier: clinical`)
 
-**Какво е:** Публикувани насоки от медицински организации, болници, oncology societies, официални patient education материали.
+**What it is:** Published guidance from medical organizations, hospitals, oncology societies, official patient education materials.
 
-**Правило:** Приемаме за **авторитетна база** на отговора. Не измисляме — цитираме/парафразираме retrieved chunks.
+**Rule:** Treat as the **authoritative base** for the answer. Do not invent — cite or paraphrase retrieved chunks.
 
-**Примери в проекта:** ESPEN, NCI, ACS, onco.bg (ACS BG), CancerInfo.bg, SEOM, AND.
+**Examples in this project:** ESPEN, NCI, ACS, onco.bg (ACS BG), CancerInfo.bg, SEOM, AND.
 
-### Слой 2 — Peer (`tier: peer`)
+### Layer 2 — Peer (`tier: peer`)
 
-**Какво е:** Форумни нишки, архивирани patient chats, бъдещи user queries, практически съвети от общности.
+**What it is:** Forum threads, archived patient chats, future user queries, practical tips from communities.
 
-**Правило:** **Не** третираме като медицински факт. Показваме като „опит на други“, с ясен disclaimer. **Никога не override-ваме Слой 1** без да маркираме конфликта.
+**Rule:** **Do not** treat as medical fact. Show as “what others experienced”, with a clear disclaimer. **Never override Layer 1** without flagging the conflict.
 
-**Примери в проекта:** CSN/Macmillan forums, `data/raw/user-queries/`, Neogenezis BRAТ (experiential).
-
----
-
-## UX: как изглежда отговорът
-
-Всяка препоръка следва шаблона:
-
-### 1. Медицински насоки (Слой 1)
-
-> **Препоръчано от медицински насоки:** При гадене — малки, чести хранения на всеки 2–3 часа; bland храни на стайна температура; избягвайте мазни и силно миризмещи ястия.  
-> *Източник: ACS / onco.bg*
-
-### 2. Опит на пациенти (Слой 2) — optional блок
-
-> **Това споделят други пациенти:** Някои приемат джинджифил или им помагат студени „бели“ храни (ориз, картофи). Това е личен опит — **не е потвърдено за всеки случай.**
-
-### 3. Предложение на приложението (синтез)
-
-> **Приложението предлага:** Опитайте лека закуска на всеки 2–3 ч — например сухари + малко сирене или овесена каша, ако понасяте. Пийте на малки глътки между храненията.
-
-### 4. Задължителен footer
-
-> ⚕️ Това е **обща хранителна информация**, не медицински съвет. Вашето лечение е индивидуално — **съгласувайте промени в храненето с онколога или диетолог.**
+**Examples in this project:** CSN/Macmillan forums, `data/raw/user-queries/`, Neogenezis BRAT (experiential).
 
 ---
 
-## Правила при конфликт
+## UX: what an answer looks like
 
-| Ситуация | Поведение |
-|----------|-----------|
-| Peer съвет **съвпада** с клиничен | Показвай peer като „потвърждение от опит“ |
-| Peer **противоречи** на клиничен | Клиничният слой **първи**; peer с бележка „някои пациенти споделят X, но насоките препоръчват Y“ |
-| Peer препоръчва **добавки/диети** (keto, fasting, BRAТ) | Слой 2 only + „питайте лекаря преди промяна“ |
-| Няма peer match | Отговор само от Слой 1 — OK |
-| Няма clinical match | **Не** отговаряй от peer alone за safety topics; кажи „няма достатъчно информация — говорете с екипа си“ |
+Every recommendation follows this template (labels are localized BG/EN in the app; examples below in English):
+
+### 1. Clinical guidelines (Layer 1)
+
+> **Recommended from clinical guidelines:** For nausea — small, frequent meals every 2–3 hours; bland foods at room temperature; avoid greasy and strong-smelling dishes.  
+> *Source: ACS / onco.bg*
+
+### 2. Patient experience (Layer 2) — optional block
+
+> **What other patients share:** Some use ginger or find cold “white” foods helpful (rice, potatoes). This is personal experience — **not confirmed for every case.**
+
+### 3. App suggestion (synthesis)
+
+> **What the app suggests:** Try a light snack every 2–3 h — e.g. crackers with a little cheese or oatmeal if you tolerate it. Sip fluids between meals.
+
+### 4. Required footer
+
+> ⚕️ This is **general nutrition information**, not medical advice. Your treatment is individual — **discuss diet changes with your oncologist or dietitian.**
 
 ---
 
-## RAG импликации
+## Conflict rules
 
-| Аспект | Clinical | Peer |
+| Situation | Behavior |
+|-----------|----------|
+| Peer advice **aligns** with clinical | Show peer as “supported by patient experience” |
+| Peer **contradicts** clinical | Clinical layer **first**; peer with note “some patients share X, but guidelines recommend Y” |
+| Peer pushes **supplements/diets** (keto, fasting, BRAT) | Layer 2 only + “ask your doctor before changing diet” |
+| No peer match | Answer from Layer 1 only — OK |
+| No clinical match | **Do not** answer safety topics from peer alone; say “not enough information — talk to your care team” |
+
+---
+
+## RAG implications
+
+| Aspect | Clinical | Peer |
 |--------|----------|------|
-| Vector collection | `clinical` | `peer` |
-| Metadata | `tier`, `source`, `language`, `symptom_tags` | + `source_type: forum\|interview` |
-| Retrieval | **Винаги първо**, top-k=5 | Допълнително top-k=3, само ако релевантно |
-| Prompt | Отделна секция `[CLINICAL_CONTEXT]` | Отделна `[PEER_CONTEXT]` — explicit „do not treat as medical fact“ |
-| Chunking | По секция/симптом | По post/comment thread |
+| Vector metadata | `tier: clinical` | `tier: peer` |
+| Extra metadata | `source`, `language`, `symptom_tags` | + `source_type: forum\|interview` |
+| Retrieval | **Always first**, top-k=5 | Additional top-k=3 when relevant |
+| Prompt | Section `[CLINICAL_CONTEXT]` | Section `[PEER_CONTEXT]` — explicit “do not treat as medical fact” |
+| Chunking | By section/symptom | By post/comment thread |
 
-Виж: [`decisions/003-two-tier-knowledge.md`](decisions/003-two-tier-knowledge.md)
+See: [`decisions/003-two-tier-knowledge.md`](decisions/003-two-tier-knowledge.md)
 
 ---
 
-## Седмично меню + корекция при оплаквания
+## Weekly menu + same-day corrections
 
-Храненето при онко лечение **не е статична диета** — то се променя по **фаза на цикъла** и **текущ симптом**. Приложението трябва да отразява това.
+Nutrition during oncology treatment **is not a static diet** — it changes with **cycle phase** and **today’s symptoms**. The app should reflect that.
 
-### Как работи
+### How it works
 
 ```
-[Профил]                    [Базово седмично меню]
- лечение: химио              Пн–Нед: закуска / обяд / вечеря / 2 snacks
- цикъл: ден 3 от 21              ↓
-         │                  всеки ден има „фаза“ (виж долу)
+[Profile]                    [Base weekly menu]
+ treatment: chemo             Mon–Sun: breakfast / lunch / dinner / 2 snacks
+ cycle: day 3 of 21              ↓
+         │                  each day has a “phase” (see below)
          ▼
-[Пациентът казва днес]  →  [Корекция само за днес + maybe утре]
- „гади ме, нямам апетит“      замени ястия, намаля порции, добави snack
+[Patient says today]    →  [Adjust today (+ maybe tomorrow)]
+ “nauseous, no appetite”     swap meals, smaller portions, add snack
          │
          ▼
-[Ново меню за деня]       останалата седмица = шаблон, не изтрит
+[Menu for the day]        rest of week = template, not wiped
 ```
 
-**Принцип:** седмичният план е **шаблон с гъвкост**, не rigid meal plan. Оплакването **override-ва конкретни хранения**, не цялата философия.
+**Principle:** the weekly plan is a **flexible template**, not a rigid meal plan. A complaint **overrides specific meals**, not the whole approach.
 
-### Фази на седмицата (пример: химио на всеки 3 седмици)
+### Week phases (example: chemo every 3 weeks)
 
-| Фаза | Обикновено | Фокус на храненето |
-|------|------------|-------------------|
-| `pre_chemo` | 2–3 дни преди | Белтък, калории, хидратация — „зареждане“ |
-| `chemo_day` | Ден на инфузия/таблетки | Леко, малки порции, bland |
-| `post_chemo_early` | Дни 1–3 след | Гадене, сухота — студено, без мирис, често |
-| `post_chemo_late` | Дни 4–10 | Апетит се връща; постепенно разнообразие |
-| `recovery` | Между циклите | По-балансирано меню, поддържане на тегло |
-| `corticosteroid_day` | При дексаметазон и др. кортикостероиди | ↑ апетит, ↑ кръвна захар — други правила |
+| Phase | Usually | Nutrition focus |
+|-------|---------|-----------------|
+| `pre_chemo` | 2–3 days before | Protein, calories, hydration — “loading” |
+| `chemo_day` | Infusion/tablet day | Light, small portions, bland |
+| `post_chemo_early` | Days 1–3 after | Nausea, dry mouth — cold, low odor, frequent |
+| `post_chemo_late` | Days 4–10 | Appetite returns; gradual variety |
+| `recovery` | Between cycles | More balanced menu, weight maintenance |
+| `corticosteroid_day` | Dexamethasone and similar | ↑ appetite, ↑ blood sugar — different rules |
 
-Пациентът може да не знае фазата — приложението пита: *„Днес химио ли е? Как се чувстваш?“*
+The patient may not know the phase — the app asks: *“Is today a chemo day? How do you feel?”*
 
-### Входове за корекция
+### Inputs for correction
 
-| Оплакване | Какво променя менюто |
-|----------|---------------------|
-| Гадене / повръщане | Bland, студено, малки порции; махни мазно/пикантно |
-| Няма апетит | Snacks на 2–3 ч; калorie-dense (орехи, сирене), не големи чинии |
-| Диария | BRAT-подобни; без фибри/мазнини; айрян, банан |
-| Запек | Фибри, топли напитки, prunes |
-| Метален вкус | Кисело/подправки; avoid red meat; smoothies |
-| Сухота в устата | Меко, сосове, супи; avoid dry/crunchy |
-| Умора | Стабилни комбо протеин+мазнини; не само захар |
+| Complaint | How the menu changes |
+|-----------|----------------------|
+| Nausea / vomiting | Bland, cold, small portions; drop greasy/spicy |
+| No appetite | Snacks every 2–3 h; calorie-dense (nuts, cheese), not large plates |
+| Diarrhea | BRAT-like; low fiber/fat; yogurt, banana |
+| Constipation | Fiber, warm drinks, prunes |
+| Metallic taste | Acid/marinades; avoid red meat; smoothies |
+| Dry mouth | Soft, sauces, soups; avoid dry/crunchy |
+| Fatigue | Steady protein+fat combos; not sugar alone |
 
-### MVP за меню (фаза 2 след symptom→answer)
+### Menu MVP (Phase 2, after symptom → answer)
 
-1. Генерира **7 дни × 3–5 хранения** от clinical tier
-2. Поле „Как е днес?“ → **re-generate ден N**
-3. Запазва история: какво е работило (optional, peer tier)
+1. Generate **7 days × 3–5 meals** from clinical tier
+2. “How is today?” → **re-generate day N**
+3. Optional history of what worked (peer tier)
 
 ---
 
-## Patient context — какво трябва да следим
+## Patient context — what we track
 
-За смислено меню и корекции недостатъчни са само „гадене“ и „какво да ям“. Нужен е **контекстен профил** на три нива.
+Meaningful menus and corrections need more than “nausea” and “what should I eat”. We use a **context profile** at three levels.
 
-### Ниво A — задължително (MVP меню)
+### Level A — required (menu MVP)
 
-| Поле | Защо | Как го питаме |
-|------|------|---------------|
-| **Тип лечение** | Различни странични ефекти | химио / лъчево / хormonal / след операция |
-| **Ден от цикъл** или **фаза** | Приоритет калории vs баланс | „Ден ___ от цикъл“ или „днес химио?“ |
-| **Симптоми днес** | Override на менюто | multi-select + свободен текст |
-| **Тегло / trend** | Отслабване → калории първи | „Губиш ли тегло последните седмици?“ |
+| Field | Why | How we ask |
+|-------|-----|------------|
+| **Treatment type** | Different side effects | chemo / radiation / hormonal / post-surgery |
+| **Cycle day** or **phase** | Calories vs balance priority | “Day ___ of cycle” or “chemo today?” |
+| **Symptoms today** | Overrides today’s menu | multi-select + free text |
+| **Weight / trend** | Weight loss → calories first | “Losing weight recently?” |
 
-### Ниво B — силно препоръчително
+### Level B — strongly recommended
 
-| Поле | Защо | Пример |
-|------|------|--------|
-| **Диагноза / локализация** | Head/neck → гълтane; GI → различна диета | рак на гърда, колоректален, H&N |
-| **Конкретен режим / лекарства** | Кортикостероиди, таргетна терапия | дексаметазон дни 1–3, не само „химио“ |
-| **Съпътстващи** | Диабет, бъбрек, celiac | диабет тип 2 |
-| **Диетични ограничения** | Алергии, религия, vegan | без лактоза |
-| **Държава / град** | Сезонни местни плодове и зеленчуци | `BG`, `София` |
+| Field | Why | Example |
+|-------|-----|---------|
+| **Diagnosis / site** | Head/neck → swallowing; GI → different diet | breast, colorectal, H&N |
+| **Regimen / drugs** | Corticosteroids, targeted therapy | dexamethasone days 1–3, not just “chemo” |
+| **Comorbidities** | Diabetes, kidney, celiac | type 2 diabetes |
+| **Dietary restrictions** | Allergies, religion, vegan | lactose-free |
+| **Country / city** | Seasonal local produce | `US`, `BG`, `Sofia` |
 
-### Ниво C — медицински стойности (optional, self-reported)
+### Level C — medical values (optional, self-reported)
 
-> **Не сме лаборатория.** Пациентът въвежда **ориентировъчно** или диапазон — не заместваме кръвни изследвания.
+> **We are not a lab.** The patient enters **approximate** values — we do not replace blood tests.
 
-| Стойност | Влияние върху храненето | Как питаме |
-|----------|-------------------------|------------|
-| **Кръвна захар** | Кортикостероиди + диабет → ограничи прости захари | „Висока ли е напоследък? (да/не/не знам)“ |
-| **Neutrophils / имунитет** | Neutropenia → строга хигиена на храната | „Имало ли е предупреждение за инфекция?“ |
-| **Albumin / malnutrition flag** | ONS, high-calorie | от диетолог / „слабост, отслабване“ |
-| **Creatinine / бъбрек** | Белтък, течности | comorbidity checkbox |
-| **Последно тегло (kg)** | Building-up diet | число, optional |
+| Value | Effect on nutrition | How we ask |
+|-------|---------------------|------------|
+| **Blood glucose** | Steroids + diabetes → limit simple sugars | “High recently? (yes/no/unsure)” |
+| **Neutrophils / immunity** | Neutropenia → strict food hygiene | “Any infection-risk warning?” |
+| **Albumin / malnutrition flag** | ONS, high-calorie | from dietitian / “weakness, weight loss” |
+| **Creatinine / kidney** | Protein, fluids | comorbidity checkbox |
+| **Recent weight (kg)** | Building-up diet | number, optional |
 
-**Правило:** при липса на данни → питаме **1–2 ключови въпроса**, не 20. При неясни labs → conservative clinical advice + „питайте екипа“.
+**Rule:** if data is missing → ask **1–2 key questions**, not 20. If labs are unclear → conservative clinical advice + “ask your team”.
 
-### Как контекстът променя логиката (пример: захар)
+### How context changes logic (example: sugar)
 
 ```
 IF weight_trend == losing AND phase in (post_chemo_early, chemo_day):
-    priority = CALORIES_FIRST          # банан, мед, сладолед — OK ако минават
+    priority = CALORIES_FIRST          # banana, honey, ice cream — OK if tolerated
 
 ELIF diabetes OR on_corticosteroids OR glucose == high:
-    priority = BLOOD_SUGAR_AWARE         # по-малко прости захари, протеин+фибри
+    priority = BLOOD_SUGAR_AWARE         # fewer simple sugars, protein+fiber
 
 ELIF phase == recovery AND symptoms == none:
-    priority = BALANCED                  # нормално балансирано меню
+    priority = BALANCED                  # normal balanced meals
 ```
 
-### Какво **не** правим
+### What we **do not** do
 
-- Не интерпретираме лабораторни стойности като диагноза
-- Не коригираме инсулин/лекарства
-- Не съхраняваме PHI в git (`data/patient/` → gitignored, local only)
+- Interpret lab values as a diagnosis
+- Adjust insulin or medications
+- Store PHI in git (`data/patient/` → gitignored, local only)
 
-### Минимален JSON профил (target)
+### Minimal JSON profile (target)
 
 ```json
 {
@@ -243,74 +243,77 @@ ELIF phase == recovery AND symptoms == none:
     "phase_override": null
   },
   "locale": {
-    "country": "BG",
-    "city": "Sofia"
+    "country": "US",
+    "city": "Boston"
   }
 }
 ```
 
-**Локация и сезонност:** `country` + `city` насочват към местни, сезонно налични продукти. MVP подава полетата в prompt-а; **календар на произведение по регион** (структурирани данни) е Phase 2 — дотогава моделът използва общи знания + „проверете на пазара“.
+**Location and seasonality:** `country` + `city` steer toward local, in-season produce. MVP passes fields into the prompt; a **per-region produce calendar** (structured data) is Phase 2 — until then the model uses general knowledge + “check what’s available locally”.
 
-**Примерни въпроси (EN):**
+**Example questions (demo / eval):**
+
 - Weekly menu: *Plan a 7-day menu for my chemo cycle — day 4, still nauseous.*
 - Daily menu: *What should I eat today? Cycle day 2, no appetite.*
 - Substitute: *You suggested banana but it makes me nauseous — what instead?*
-- Seasonal/local: *Soft fruits for nausea this season — Sofia, Bulgaria.*
+- Seasonal/local: *Soft fruits for nausea this season — Boston, US.*
 
-Фаза на цикъла може да се **изчисли** от `cycle_day` или да се **override-не** от пациента („днес се чувствам като след химио“).
+Cycle phase can be **derived** from `cycle_day` or **overridden** by the patient (“today feels like day 2 after chemo”).
 
 ---
 
-## Защо „един ден захар, друг ден не“ — не е произвол
+## Why “sugar OK one day, not the next” is not random
 
-Пациентът описва не **противоречие**, а **различен контекст всеки ден**. Насоките не казват „захарта винаги е OK“ или „винаги е лошa“ — казват **какво е приоритет днес**.
+The patient is describing **different context each day**, not a contradiction. Guidelines do not say sugar is always OK or always bad — they say **what matters today**.
 
-### 1. Различен приоритет: калории vs. контрол
+### 1. Different priority: calories vs control
 
-| Ситуация | Логика за захар/сладко |
-|----------|------------------------|
-| Отслабва, не може да яде | **Калориите първи** — сладолед, мед, банан могат да са единственият прием („яж каквото можеш“ — CSN/Macmillan peer) |
-| По-добре, има апетит | **По-балансирано** — простите захари дават бърз пик и crash (onco.bg при умора) |
+| Situation | Logic for sugar/sweets |
+|-----------|------------------------|
+| Losing weight, cannot eat | **Calories first** — ice cream, honey, banana may be the only intake (“eat what you can” — CSN/Macmillan peer) |
+| Doing better, has appetite | **More balanced** — simple sugars spike and crash (onco.bg on fatigue) |
 
-Един ден тялото **трябва** да получи нещо; друг ден вече може да понася нормална храна.
+One day the body **needs** any intake; another day it can tolerate normal meals.
 
-### 2. Фаза на химио цикъла
+### 2. Chemo cycle phase
 
-- **Ден на химио / 1–2 дни след:** гадене → сухari, банан, мед в чай могат да минат; торта — не
-- **Ден 5–10:** апетит се връща → „захар“ може да е отново OK или да предизвика гадене — зависи от вкус/стомах
+- **Chemo day / 1–2 days after:** nausea → crackers, banana, honey in tea may work; cake — often not
+- **Days 5–10:** appetite returns → sugar may be OK again or trigger nausea — depends on taste/stomach
 
-### 3. Кортикостероиди (много често при гърда, лимфом, myeloma)
+### 3. Corticosteroids (common in breast, lymphoma, myeloma)
 
-Дексаметазон и другите **кортикостероиди** повишават апетита и кръвната захар. В деня на/след прием:
-- по-голям глад, понякога craving за сладко
-- при диабет или след отпадане на кортикостероид — захарта „не минава“ (glucose spike/crash)
+Dexamethasone and others **raise appetite and blood glucose**. On/after steroid days:
 
-### 4. Симптом, не календар
+- more hunger, sometimes cravings for sweets
+- with diabetes or after steroids stop — glucose may spike/crash
 
-| Симптом днес | Захар/сладко |
-|--------------|--------------|
-| Гадене | Джинджифил бонbon, лимон — малко захар, OK; тежък десерт — не |
-| Диария | Банан (захари + калий) — OK; сorbitol в „sugar-free“ — лошо |
-| Умора | onco.bg: избягвай захарни пикове → протеин + ядки |
-| Метален вкус | Понякога сладкото „минава“ по-добре от месо |
+### 4. Symptom, not calendar
 
-### 5. Объркване от противоречиви съвети
+| Symptom today | Sugar/sweets |
+|---------------|--------------|
+| Nausea | Ginger candy, lemon — small sugar OK; heavy dessert — not |
+| Diarrhea | Banana (sugar + potassium) — OK; sorbitol in “sugar-free” — often worse |
+| Fatigue | onco.bg: avoid sugar spikes → protein + nuts |
+| Metallic taste | Sometimes sweets tolerate better than meat |
 
-Пациентът чува едновременно:
-- „Яж каквото искаш“ (форуми)
-- „Намали захарта“ (общо здравословно)
-- „Бананите са полезни при диария“ (BRAТ)
-- „Бананите са много захар“ (anti-cancer blogs)
+### 5. Confusion from conflicting advice
 
-**Приложението трябва да обясни защо:** *„Днес приоритетът е калории, защото…“* vs *„Днес приоритетът е стабилна енергия, защото…“*
+Patients hear at once:
 
-### Как да го кодираме
+- “Eat whatever you want” (forums)
+- “Cut sugar” (general wellness)
+- “Bananas help diarrhea” (BRAT)
+- “Bananas are too sugary” (anti-cancer blogs)
+
+**The app should explain why:** *“Today the priority is calories because…”* vs *“Today the priority is steady energy because…”*
+
+### How we encode it
 
 ```python
-# псевдокод — не random, а state
+# pseudocode — not random, but state
 day_state = {
-    "phase": "post_chemo_early",      # от профил / календар
-    "symptoms": ["nausea"],           # от пациента днес
+    "phase": "post_chemo_early",      # from profile / calendar
+    "symptoms": ["nausea"],           # from patient today
     "weight_trend": "losing",         # optional
     "on_corticosteroids": False,
 }
@@ -319,40 +322,43 @@ day_state = {
 
 ---
 
-## MVP scope (актуализиран)
+## MVP scope (current)
 
-### В scope
-- Symptom → structured answer с **два видими блока** (clinical + optional peer)
-- Disclaimer на всеки отговор
-- BG-first clinical sources (ACS BG, onco.bg, CancerInfo.bg)
-- EN clinical sources за по-богат retrieval
+### In scope
 
-### Фаза 2 (след първи working CLI)
-- **Седмично меню** с фази на лечението
-- **Дневна корекция** при оплакване (override на 1 ден)
-- Обяснение *защо* днес правилата са различни (напр. захар)
+- Symptom → structured answer with **two visible blocks** (clinical + optional peer)
+- Disclaimer on every answer
+- **Bilingual** responses (`bg` / `en`); knowledge base includes BG and EN sources
+- Vector RAG (Chroma or pgvector) + keyword fallback
+
+### Phase 2
+
+- **Weekly menu** with treatment phases
+- **Daily correction** on complaint (override one day)
+- Explain *why* rules differ today (e.g. sugar)
 
 ### Out of scope (MVP)
-- Автоматична drug-nutrient interaction проверка
-- Персонализация по конкретен химио протокол
-- Moderation на live patient community
+
+- Automatic drug–nutrient interaction checking
+- Personalization to a specific chemo protocol
+- Live patient community moderation
 
 ---
 
-## Диференциатор
+## Differentiator
 
-Generic nutrition chatbots смесват всичко в един отговор. **Onco-nutrition** казва ясно:
+Generic nutrition chatbots mix everything into one answer. **Onco-nutrition** states clearly:
 
-- какво казват **докторите и насоките**
-- какво казват **пациентите**
-- какво **предлага приложението**
-- и че **лекарят има последната дума**
+- what **doctors and guidelines** say
+- what **patients** share
+- what the **app** suggests
+- and that the **clinician has the final word**
 
 ---
 
-## Свързани документи
+## Related documents
 
 - [Architecture](architecture.md)
 - [ADR 003 — Two-tier knowledge](decisions/003-two-tier-knowledge.md)
-- [Източници — класификация](references/sources/README.md)
-- [Форуми (Tier 2)](references/forums/README.md)
+- [Sources — classification](references/sources/README.md)
+- [Forums (Tier 2)](references/forums/README.md)

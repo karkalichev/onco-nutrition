@@ -1,48 +1,48 @@
 # 001 — LLM Provider
 
-**Дата:** 2026-05-19  
-**Статус:** Прието (2026-05-21)
+**Date:** 2026-05-19  
+**Status:** Accepted (2026-05-21)
 
-## Контекст
+## Context
 
-Избор между OpenAI и Anthropic за основен LLM provider. Имаме платен Anthropic бюджет.
+Choice between OpenAI and Anthropic as the primary LLM provider. We have a paid Anthropic budget.
 
-## Решение
+## Decision
 
-**Anthropic** — единствен provider за MVP.
+**Anthropic** — sole provider for MVP.
 
-- Модел по подразбиране: `claude-sonnet-4-5` (override с `ANTHROPIC_MODEL`)
-- Auth: `ANTHROPIC_API_KEY` в `.env`
-- Имплементация: `src/llm.py`
+- Default model: `claude-sonnet-4-5` (override with `ANTHROPIC_MODEL`)
+- Auth: `ANTHROPIC_API_KEY` in `.env`
+- Implementation: `src/llm.py`
 
-## Последствия
+## Consequences
 
-- Един API ключ и един SDK (`anthropic`) — по-прост код и конфигурация
-- OpenAI не се използва; `openai` пакетът е премахнат от dependencies
-- При нужда от по-силен модел: `ANTHROPIC_MODEL=claude-opus-4-5` (по-скъп)
+- One API key and one SDK (`anthropic`) — simpler code and configuration
+- OpenAI is not used; the `openai` package was removed from dependencies
+- For a stronger model when needed: `ANTHROPIC_MODEL=claude-opus-4-5` (more expensive)
 
-## Конфигурация
+## Configuration
 
 ```bash
 # .env
 ANTHROPIC_API_KEY=sk-ant-...
 ANTHROPIC_MODEL=claude-sonnet-4-5   # optional
-ANTHROPIC_MAX_TOKENS=2000                  # optional
+ANTHROPIC_MAX_TOKENS=2000         # optional
 ```
 
 ## When to reconsider
 
-Останете на **един Anthropic provider** до Phase 2. Преди да добавите втори vendor, пробвайте **два модела в Anthropic** (Sonnet vs Opus) — по-евтино и без разминаване в тон/терминология.
+Stay on **one Anthropic provider** until Phase 2. Before adding a second vendor, try **two models within Anthropic** (Sonnet vs Opus) — cheaper and consistent tone/terminology.
 
-Преоценете решението само ако:
+Revisit this decision only if:
 
-| Тригер | Действие |
-|--------|----------|
-| **Повтарящи се outages** при Anthropic | Optional fallback provider (само при недостъпност, не в основния flow) |
-| **Eval на BG въпроси** показва систематични грешки в мед. език, които друг модел поправя | A/B тест с втори provider; миграция само при ясна полза |
-| **Бюджет или latency** блокират мащабиране | Първо по-евтин модел / по-кратък контекст; втори vendor само ако не стига |
-| **Regulatory / geographic** изискване | Provider, който покрива data residency или compliance |
+| Trigger | Action |
+|---------|--------|
+| **Repeated outages** at Anthropic | Optional fallback provider (unavailability only, not main flow) |
+| **Eval on BG/EN questions** shows systematic medical-language errors another model fixes | A/B test with a second provider; migrate only with clear benefit |
+| **Budget or latency** blocks scale | Cheaper model / shorter context first; second vendor only if insufficient |
+| **Regulatory / geographic** requirement | Provider that meets data residency or compliance |
 
-**Не си струва** втори provider за: load balancing, „just in case“ без метрики, или паралелни отговори от два модела (усложнява QA и двуслоен UX).
+**Not worth** a second provider for: load balancing, “just in case” without metrics, or parallel answers from two models (complicates QA and two-tier UX).
 
-Критерий за успех преди промяна: фиксиран eval set (~20–30 реални BG/EN въпроса) + review на терминология и disclaimer.
+Success criterion before change: fixed eval set (~20–30 real BG/EN questions) + review of terminology and disclaimers.

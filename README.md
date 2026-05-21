@@ -196,7 +196,7 @@ onco-nutrition/
 │   ├── run_demo_mobile.sh
 │   └── eval_smoke.py
 ├── docs/
-│   ├── concept.md           # Product concept (BG)
+│   ├── concept.md           # Product concept (EN)
 │   ├── architecture.md
 │   ├── decisions/           # ADRs (LLM, RAG, two-tier)
 │   └── references/          # Sources (clinical + peer)
@@ -245,6 +245,8 @@ VECTOR_STORE=chroma                 # chroma | pgvector
 | `pgvector` | Embeddings in PostgreSQL (`docker compose up -d`) |
 
 ## Documentation
+
+Project docs (`docs/`, root `README`) are in **English**. Archived **RAG source** files under `docs/references/web/` (Bulgarian) and `docs/references/forums/` (English) stay in their original language for retrieval.
 
 | Document | Content |
 |----------|---------|

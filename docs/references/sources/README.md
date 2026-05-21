@@ -1,27 +1,29 @@
-# Източници: хранене при онкоболни
+# Sources: nutrition for oncology patients
 
-Свалени на **21.05.2026** за проекта `onco-nutrition`. Използвай като база за domain research и RAG pipeline.
+Downloaded **2026-05-21** for the `onco-nutrition` project. Use as the domain research and RAG knowledge base.
 
-> **Забележка:** Тези материали са за образователни цели. Не заменят медицински съвет от лекар или диетолог.
+> **Note:** These materials are for educational purposes. They do not replace medical advice from a doctor or dietitian.
 
----
-
-## Двустепенен модел (Tier 1 / Tier 2)
-
-| Tier | Доверие | UI етикет | Къде в проекта |
-|------|---------|-----------|----------------|
-| **`clinical`** | Авторитетна мед. документация | „Препоръчано от медицински насоки“ | Този файл — PDF + web (долу) |
-| **`peer`** | Patient опит, не факт | „Това споделят други пациенти“ | [`../forums/`](../forums/), `data/raw/user-queries/` |
-
-Виж [concept.md](../../concept.md) · [ADR 003](../../decisions/003-two-tier-knowledge.md)
+> **Language:** This README is in English. **Archived content files** under `../web/` (mostly Bulgarian) and `../forums/` (mostly English) are kept in **original language** for RAG — do not translate them in place.
 
 ---
 
-## PDF документи — Tier 1 (`clinical`)
+## Two-tier model (Tier 1 / Tier 2)
 
-| Файл | Източник | Език | Описание |
-|------|----------|------|----------|
-| `acs-nutrition-during-treatment-bg.pdf` | [Българско сдружение „Лимфом"](https://lymphom-bg.com/wp-content/uploads/2019/10/Nutrition-Bg.pdf) | BG | ACS patient booklet (BG) |
+| Tier | Trust | UI label | Location in project |
+|------|-------|----------|---------------------|
+| **`clinical`** | Authoritative medical documentation | “Recommended from clinical guidelines” | This file — PDFs + web (below) |
+| **`peer`** | Patient experience, not fact | “What other patients share” | [`../forums/`](../forums/), `data/raw/user-queries/` |
+
+See [concept.md](../../concept.md) · [ADR 003](../../decisions/003-two-tier-knowledge.md)
+
+---
+
+## PDF documents — Tier 1 (`clinical`)
+
+| File | Source | Language | Description |
+|------|--------|----------|-------------|
+| `acs-nutrition-during-treatment-bg.pdf` | [Bulgarian Lymphoma Association](https://lymphom-bg.com/wp-content/uploads/2019/10/Nutrition-Bg.pdf) | BG | ACS patient booklet (BG) |
 | `acs-nutrition-during-treatment-en.pdf` | [American Cancer Society](https://www.cancer.org/content/dam/cancer-org/cancer-control/en/booklets-flyers/nutrition-for-the-patient-with-cancer-during-treatment.pdf) | EN | ACS original |
 | `nci-eating-hints.pdf` | [NCI](https://www.cancer.gov/publications/patient-education/eatinghints.pdf) | EN | Eating Hints — symptoms, recipes |
 | `espen-clinical-nutrition-in-cancer.pdf` | [ESPEN](https://www.espen.org/files/ESPEN-Guidelines/ESPEN-practical-guideline-clinical-nutrition-in-cancer.pdf) | EN | Clinical nutrition guidelines |
@@ -32,61 +34,63 @@
 
 ---
 
-## Уеб източници — Tier 1 (`clinical`)
+## Web sources — Tier 1 (`clinical`)
 
-| Файл | URL | Език |
-|------|-----|------|
+| File | URL | Language |
+|------|-----|----------|
 | `../web/onco-bg-problemi-hranene.md` | https://onco.bg/problemi-hranene-onkobolni/ | BG |
 | `../web/bgpatients-obshti-preporaki.md` | http://bgpatients.org/.../322-2019-07-17-13-48-43 | BG |
 | `../web/cancerinfo-hranene-po-vreme-na-lechenie.md` | https://cancerinfo.bg/.../hranene/ | BG |
 
-## Уеб източници — Tier 2 (`peer`)
+## Web sources — Tier 2 (`peer`)
 
-| Файл | URL | Бележка |
-|------|-----|---------|
-| `../web/anticancer-bratan-dieta.md` | https://www.anticancer-bg.com/.../ | Experiential tips (BRAТ), не клинична насока |
+| File | URL | Note |
+|------|-----|------|
+| `../web/anticancer-bratan-dieta.md` | https://www.anticancer-bg.com/.../ | Experiential tips (BRAT), not clinical guideline |
 
 ---
 
-## Tier 2 — форуми и patient queries
+## Tier 2 — forums and patient queries
 
-| Път | Описание |
-|-----|----------|
+| Path | Description |
+|------|-------------|
 | [`../forums/`](../forums/) | CSN + Macmillan archived threads |
-| [`../../data/raw/user-queries/`](../../data/raw/user-queries/) | Real BG queries from interviews |
+| [`../../data/raw/user-queries/`](../../data/raw/user-queries/) | Real queries from interviews |
 
 ---
 
-## Ключови теми, покрити от източниците
+## Topics covered by sources
 
-- Загуба на апетит, гадене, повръщане
-- Промени във вкус и обоняние
-- Запек и диария
-- Сухота в устата, язви в устата
-- Трудности при преглъщане
-- Непредвидена загуба/наддаване на тегло
-- Имунокомпрометирани пациенти — хигиена на храната
-- Белтъци, калории, хранителни добавки (ONS)
-- Скрининг за малnutrition (PG-SGA, MUST)
+- Loss of appetite, nausea, vomiting
+- Taste and smell changes
+- Constipation and diarrhea
+- Dry mouth, mouth sores
+- Difficulty swallowing
+- Unintended weight loss/gain
+- Immunocompromised patients — food safety
+- Protein, calories, oral nutritional supplements (ONS)
+- Malnutrition screening (PG-SGA, MUST)
 
 ---
 
-## Приоритет за MVP (български потребители)
+## MVP priority (multilingual knowledge base)
 
 **Tier 1 (clinical):**
+
 1. `acs-nutrition-during-treatment-bg.pdf`
 2. `onco-bg-problemi-hranene.md`
 3. `cancerinfo-hranene-po-vreme-na-lechenie.md`
 4. `espen-clinical-nutrition-in-cancer.pdf` (EN fallback)
 
 **Tier 2 (peer):**
-1. `forums/csn/` + `forums/macmillan/` — patient language & meal tricks
-2. `data/raw/user-queries/` — real BG questions (after interview)
+
+1. `forums/csn/` + `forums/macmillan/` — patient language and meal tricks
+2. `data/raw/user-queries/` — real questions (after interviews)
 
 ---
 
-## Свързани документи
+## Related documents
 
-- [Концепция — two-tier model](../../concept.md)
-- [Общности и форуми](../communities.md)
-- [Събиране на user queries](../../user-query-collection.md)
+- [Concept — two-tier model](../../concept.md)
+- [Communities and forums](../communities.md)
+- [Collecting user queries](../../user-query-collection.md)

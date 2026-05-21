@@ -110,12 +110,12 @@
 
 Every response has **four labeled sections**:
 
-| Section | Source tier | Label (BG) |
-|---------|-------------|------------|
-| 1. Clinical recommendations | Tier 1 | „Препоръчано от медицински насоки“ |
-| 2. Peer insights (optional) | Tier 2 | „Това споделят други пациенти“ + disclaimer |
-| 3. App synthesis | LLM | „Приложението предлага…“ |
-| 4. Footer | — | „Съгласувайте с онколог или диетолог“ |
+| Section | Source tier | Label (EN; localized in app) |
+|---------|-------------|--------------------------------|
+| 1. Clinical recommendations | Tier 1 | “Recommended from clinical guidelines” |
+| 2. Peer insights (optional) | Tier 2 | “What other patients share” + disclaimer |
+| 3. App synthesis | LLM | “What the app suggests…” |
+| 4. Footer | — | “Discuss with your oncologist or dietitian” |
 
 **Content per section:**
 1. What to eat / avoid (clinical) + source reference

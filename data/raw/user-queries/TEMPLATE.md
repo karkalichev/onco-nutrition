@@ -12,7 +12,7 @@
 - **text (exact words):**
 - **symptom:**
 - **treatment_phase:** before / during_chemo / during_rt / after / remission
-- **language:** bg
+- **language:** en
 - **notes:**
 
 ## Query 002
@@ -20,7 +20,7 @@
 - **text (exact words):**
 - **symptom:**
 - **treatment_phase:**
-- **language:** bg
+- **language:** en
 - **notes:**
 
 ## Query 003
@@ -28,7 +28,7 @@
 - **text (exact words):**
 - **symptom:**
 - **treatment_phase:**
-- **language:** bg
+- **language:** en
 - **notes:**
 
 ---
