@@ -1,0 +1,19 @@
+# Environment
+.env
+venv/
+
+# Raw user interview data (may contain sensitive info)
+data/raw/user-queries/*-session.md
+data/raw/user-queries/queries.json
+
+# Generated chunks (rebuild with: python -m src.cli ingest)
+data/processed/
+
+# Eval LLM run outputs
+data/eval/runs/
+
+# Patient profiles (PHI — local only)
+data/patient/
+
+# Keep template
+!data/raw/user-queries/TEMPLATE.md

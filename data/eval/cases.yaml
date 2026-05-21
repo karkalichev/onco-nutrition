@@ -1,0 +1,86 @@
+# Eval cases for manual smoke testing (PatientContext + dual-tier RAG)
+# Run: python scripts/eval_smoke.py
+
+cases:
+  - id: nausea_post_chemo_losing
+    locale: bg
+    question: "Какво да ям днес при гадене след химио?"
+    symptoms: [nausea]
+    cycle_day: 2
+    weight_trend: losing
+    expect_priority: CALORIES_FIRST
+    notes: "Bland, small meals; calorie-dense OK; explain weight loss priority"
+
+  - id: corticosteroids_high_glucose
+    locale: bg
+    question: "Мога ли да ям сладко и банани?"
+    corticosteroids: true
+    glucose: high_recently
+    comorbidity: [diabetes]
+    expect_priority: BLOOD_SUGAR_AWARE
+    notes: "Limit simple sugars; mention corticosteroids/diabetes"
+
+  - id: recovery_balanced
+    locale: bg
+    question: "Какво да включа в менюто тази седмица?"
+    cycle_day: 14
+    weight_trend: stable
+    expect_priority: BALANCED
+    notes: "Balanced meals; no extreme calorie push"
+
+  - id: en_nausea_post_chemo
+    locale: en
+    question: "What should I eat when nauseous after chemo?"
+    symptoms: [nausea]
+    cycle_day: 2
+    weight_trend: losing
+    expect_priority: CALORIES_FIRST
+    notes: "English output; same priority as BG nausea case"
+
+  - id: no_appetite_calories
+    locale: bg
+    question: "Нямам апетит — как да си набавя калории?"
+    symptoms: [no_appetite]
+    weight_trend: losing
+    expect_priority: CALORIES_FIRST
+    notes: "Snacks every 2-3h; calorie-dense foods"
+
+  - id: chemo_day_light
+    locale: bg
+    question: "Днес е ден на химио — какво е подходящо?"
+    cycle_day: 1
+    symptoms: [nausea]
+    expect_priority: CALORIES_FIRST
+    notes: "Light, bland; phase chemo_day"
+
+  - id: diarrhea_brat
+    locale: bg
+    question: "Имам диария — какво да ям и какво да избягвам?"
+    symptoms: [diarrhea]
+    cycle_day: 3
+    expect_priority: CALORIES_FIRST
+    notes: "BRAT-like; avoid greasy; clinical tier primary"
+
+  - id: metal_taste
+    locale: bg
+    question: "Храната ми се струва с метален вкус — има ли трикове?"
+    symptoms: [metal_taste]
+    expect_priority: CALORIES_FIRST
+    notes: "Acid/marinades; avoid red meat if relevant"
+
+  - id: corticosteroids_only
+    locale: bg
+    question: "Взимам дексаметазон и съм много гладен — нормално ли е?"
+    corticosteroids: true
+    expect_priority: BLOOD_SUGAR_AWARE
+    notes: "Corticosteroids term; appetite vs sugar awareness"
+
+  - id: peer_sugar_conflict
+    locale: bg
+    question: "Пациенти казват сладолед помага при гадене — вярно ли е?"
+    symptoms: [nausea]
+    cycle_day: 2
+    glucose: high_recently
+    corticosteroids: true
+    expect_priority: BLOOD_SUGAR_AWARE
+    notes: "If peer retrieved: conflict note; clinical wins; sugar caution"
