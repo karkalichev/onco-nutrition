@@ -26,4 +26,8 @@ echo "  On your phone (same Wi‑Fi), open:"
 echo "  http://${IP}:8081"
 echo ""
 
-exec ./venv/bin/streamlit run demo_app.py
+exec ./venv/bin/streamlit run demo_app.py \
+  --server.address 0.0.0.0 \
+  --server.port 8081 \
+  --server.headless true \
+  --browser.gatherUsageStats false

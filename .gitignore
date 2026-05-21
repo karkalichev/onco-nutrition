@@ -2,6 +2,10 @@
 .env
 venv/
 
+# Editor / local tooling
+.vscode/
+.streamlit/
+
 # Python bytecode
 __pycache__/
 *.py[cod]
