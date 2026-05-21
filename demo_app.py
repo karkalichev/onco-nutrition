@@ -10,8 +10,8 @@ import streamlit as st
 from dotenv import load_dotenv
 
 from src.assistant import ask
-from src.config import CHROMA_DIR, CHUNKS_FILE
-from src.retrieval.index_build import chroma_ready
+from src.config import CHROMA_DIR, CHUNKS_FILE, get_vector_store
+from src.retrieval.backend import vector_index_ready
 from src.retrieval.store import resolve_retrieval_mode
 from src.i18n import Locale, resolve_locale
 from src.llm import resolve_anthropic_model
@@ -228,11 +228,13 @@ with st.sidebar:
     else:
         st.error(_L("missing_chunks"))
     mode = resolve_retrieval_mode()
+    store = get_vector_store()
     if mode == "vector":
-        st.success(f"Retrieval: vector ({CHROMA_DIR.name}/)")
+        label = "PostgreSQL/pgvector" if store == "pgvector" else f"{CHROMA_DIR.name}/"
+        st.success(f"Retrieval: vector ({label})")
     else:
         st.warning("Retrieval: keyword — run `python -m src.cli index` for vector search")
-    if CHUNKS_FILE.exists() and not chroma_ready():
+    if CHUNKS_FILE.exists() and not vector_index_ready():
         st.caption("`python -m src.cli index`")
     if os.getenv("ANTHROPIC_API_KEY"):
         st.success("API key OK")

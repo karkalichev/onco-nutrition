@@ -16,9 +16,11 @@ src/
 │   └── pipeline.py     # writes data/processed/chunks.jsonl
 ├── retrieval/
 │   ├── store.py        # ChunkStore: vector or keyword by tier
+│   ├── backend.py      # Chroma vs pgvector selection
 │   ├── vector.py       # LangChain + Chroma + tier filter
+│   ├── pgvector.py     # PostgreSQL + pgvector + tier filter
 │   ├── keyword.py      # token overlap fallback
-│   ├── index_build.py  # ingest → Chroma
+│   ├── index_build.py  # ingest → Chroma or pgvector
 │   ├── documents.py    # Chunk ↔ LangChain Document
 │   └── embeddings.py   # HuggingFace multilingual model
 └── prompts/
@@ -80,8 +82,8 @@ Example questions (weekly menu, substitutes, seasonal): see root [README.md](../
 
 ## Data flow
 
-`docs/references/` + `data/raw/user-queries/` → **ingest** → `chunks.jsonl` → **index** → `chroma/` → **retrieve** (clinical k=5, peer k=3) → **PatientContext** → **LLM** → 4-section markdown response.
+`docs/references/` + `data/raw/user-queries/` → **ingest** → `chunks.jsonl` → **index** → `chroma/` or PostgreSQL → **retrieve** (clinical k=5, peer k=3) → **PatientContext** → **LLM** → 4-section markdown response.
 
-Set `RETRIEVAL=auto|vector|keyword` in `.env` (default `auto`).
+Set `RETRIEVAL=auto|vector|keyword` and `VECTOR_STORE=chroma|pgvector` in `.env` (defaults: `auto`, `chroma`).
 
 See [../docs/concept.md](../docs/concept.md) and [../docs/architecture.md](../docs/architecture.md).

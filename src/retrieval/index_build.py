@@ -1,10 +1,16 @@
-"""Build persisted Chroma index from chunks.jsonl (LangChain)."""
+"""Build vector index from chunks.jsonl (Chroma or PostgreSQL pgvector)."""
 
 import json
 import shutil
 from pathlib import Path
 
-from src.config import CHROMA_DIR, CHROMA_COLLECTION, CHUNKS_FILE, PROJECT_ROOT
+from src.config import (
+    CHROMA_DIR,
+    CHROMA_COLLECTION,
+    CHUNKS_FILE,
+    PROJECT_ROOT,
+    get_vector_store,
+)
 from src.models import Chunk
 from src.retrieval.documents import chunk_to_document
 from src.retrieval.embeddings import get_embeddings
@@ -26,25 +32,12 @@ def load_chunks(chunks_path: Path | None = None) -> list[Chunk]:
     return chunks
 
 
-def build_vector_index(
-    chunks_path: Path | None = None,
-    chroma_dir: Path | None = None,
+def _build_chroma_index(
+    chunks: list[Chunk],
+    chroma_dir: Path,
     *,
-    reset: bool = True,
+    reset: bool,
 ) -> dict[str, int]:
-    """Embed all chunks and persist to Chroma. First run downloads the embedding model."""
-    chunks_path = chunks_path or CHUNKS_FILE
-    chroma_dir = chroma_dir or CHROMA_DIR
-
-    if not chunks_path.exists():
-        raise FileNotFoundError(
-            f"Missing {chunks_path.relative_to(PROJECT_ROOT)}. Run: python -m src.cli ingest"
-        )
-
-    chunks = load_chunks(chunks_path)
-    if not chunks:
-        raise ValueError("No chunks to index.")
-
     if reset and chroma_dir.exists():
         shutil.rmtree(chroma_dir)
 
@@ -62,11 +55,65 @@ def build_vector_index(
         collection_name=CHROMA_COLLECTION,
         persist_directory=str(chroma_dir),
     )
+    print(f"  Vector index → {chroma_dir.relative_to(PROJECT_ROOT)}")
+    return _chunk_stats(chunks)
 
-    stats = {
+
+def _build_pgvector_index(
+    chunks: list[Chunk],
+    *,
+    reset: bool,
+) -> dict[str, int]:
+    from src.retrieval.pgvector import (
+        ensure_pgvector_schema,
+        pg_connection,
+        reset_pgvector_index,
+        upsert_chunk_embeddings,
+    )
+
+    embeddings_model = get_embeddings()
+    texts = [c.text for c in chunks]
+
+    print(f"  Embedding {len(chunks)} chunks (model loads on first run)...")
+    vectors = embeddings_model.embed_documents(texts)
+
+    with pg_connection() as conn:
+        ensure_pgvector_schema(conn)
+        if reset:
+            reset_pgvector_index(conn)
+        upsert_chunk_embeddings(conn, chunks, vectors)
+
+    print(f"  Vector index → PostgreSQL ({get_vector_store()})")
+    return _chunk_stats(chunks)
+
+
+def _chunk_stats(chunks: list[Chunk]) -> dict[str, int]:
+    return {
         "total": len(chunks),
         "clinical": sum(1 for c in chunks if c.tier.value == "clinical"),
         "peer": sum(1 for c in chunks if c.tier.value == "peer"),
     }
-    print(f"  Vector index → {chroma_dir.relative_to(PROJECT_ROOT)}")
-    return stats
+
+
+def build_vector_index(
+    chunks_path: Path | None = None,
+    chroma_dir: Path | None = None,
+    *,
+    reset: bool = True,
+) -> dict[str, int]:
+    """Embed all chunks and persist to the configured vector store."""
+    chunks_path = chunks_path or CHUNKS_FILE
+    chroma_dir = chroma_dir or CHROMA_DIR
+
+    if not chunks_path.exists():
+        raise FileNotFoundError(
+            f"Missing {chunks_path.relative_to(PROJECT_ROOT)}. Run: python -m src.cli ingest"
+        )
+
+    chunks = load_chunks(chunks_path)
+    if not chunks:
+        raise ValueError("No chunks to index.")
+
+    if get_vector_store() == "pgvector":
+        return _build_pgvector_index(chunks, reset=reset)
+    return _build_chroma_index(chunks, chroma_dir, reset=reset)

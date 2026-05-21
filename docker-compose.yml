@@ -1,0 +1,19 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: onco
+      POSTGRES_PASSWORD: onco
+      POSTGRES_DB: onco_nutrition
+    ports:
+      - "5432:5432"
+    volumes:
+      - onco_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U onco -d onco_nutrition"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  onco_pgdata:

@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -8,6 +9,26 @@ DATA_PROCESSED = PROJECT_ROOT / "data" / "processed"
 CHUNKS_FILE = DATA_PROCESSED / "chunks.jsonl"
 CHROMA_DIR = DATA_PROCESSED / "chroma"
 CHROMA_COLLECTION = "onco_nutrition"
+
+# Vector store: chroma (local files) | pgvector (PostgreSQL)
+VECTOR_STORE_CHROMA = "chroma"
+VECTOR_STORE_PGVECTOR = "pgvector"
+
+# pgvector — paraphrase-multilingual-MiniLM-L12-v2 output size
+EMBEDDING_DIM = 384
+PGVECTOR_TABLE = "onco_chunk_embeddings"
+DATABASE_URL = os.getenv(
+    "DATABASE_URL",
+    "postgresql://onco:onco@localhost:5432/onco_nutrition",
+)
+
+
+def get_vector_store() -> str:
+    store = os.getenv("VECTOR_STORE", VECTOR_STORE_CHROMA).lower()
+    if store not in (VECTOR_STORE_CHROMA, VECTOR_STORE_PGVECTOR):
+        return VECTOR_STORE_CHROMA
+    return store
+
 
 # Multilingual embeddings (BG + EN chunks) — see docs/decisions/002-rag-approach.md
 EMBEDDING_MODEL = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"

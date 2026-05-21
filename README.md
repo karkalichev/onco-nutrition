@@ -41,7 +41,16 @@ python -m src.cli index
 # or in one step: python -m src.cli ingest --index
 ```
 
-Builds a **Chroma** index with multilingual embeddings (first run downloads ~400MB model). Without an index, `ask` falls back to keyword search.
+Builds a vector index with multilingual embeddings (first run downloads ~400MB model). Default backend is **Chroma** (`data/processed/chroma/`). Without an index, `ask` falls back to keyword search.
+
+**PostgreSQL + pgvector** (optional):
+
+```bash
+docker compose up -d
+# .env: VECTOR_STORE=pgvector
+# DATABASE_URL=postgresql://onco:onco@localhost:5432/onco_nutrition
+python -m src.cli index
+```
 
 **Troubleshooting `index` (NumPy / PyTorch errors):** use Python 3.12 and reinstall pinned deps:
 
@@ -150,13 +159,20 @@ onco-nutrition/
 ANTHROPIC_API_KEY=sk-ant-...
 ANTHROPIC_MODEL=claude-sonnet-4-5   # optional; avoid claude-sonnet-4-20250514 (404)
 RETRIEVAL=auto                      # auto | vector | keyword
+VECTOR_STORE=chroma                 # chroma | pgvector
+# DATABASE_URL=postgresql://onco:onco@localhost:5432/onco_nutrition
 ```
 
 | `RETRIEVAL` | Behavior |
 |-------------|----------|
-| `auto` (default) | Vector if `data/processed/chroma/` exists, else keyword |
+| `auto` (default) | Vector if index exists (Chroma dir or pgvector table), else keyword |
 | `vector` | Semantic search (requires `python -m src.cli index`) |
 | `keyword` | Token overlap only |
+
+| `VECTOR_STORE` | Behavior |
+|----------------|----------|
+| `chroma` (default) | Local persisted Chroma under `data/processed/chroma/` |
+| `pgvector` | Embeddings in PostgreSQL (`docker compose up -d`) |
 
 ## Documentation
 

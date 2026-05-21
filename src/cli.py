@@ -57,11 +57,11 @@ def main() -> None:
     p_ingest.add_argument(
         "--index",
         action="store_true",
-        help="Also build Chroma vector index after ingest (downloads embedding model on first run)",
+        help="Also build vector index after ingest (Chroma or pgvector per VECTOR_STORE)",
     )
     p_ingest.set_defaults(func=cmd_ingest)
 
-    p_index = sub.add_parser("index", help="Build Chroma vector index from chunks.jsonl")
+    p_index = sub.add_parser("index", help="Build vector index from chunks.jsonl (Chroma or pgvector)")
     p_index.add_argument(
         "--no-reset",
         action="store_true",
