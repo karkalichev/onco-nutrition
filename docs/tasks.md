@@ -9,6 +9,8 @@ Stack: Python, Anthropic API, dual-tier RAG pipeline + PatientContext (priority:
 
 **Eval:** `python scripts/eval_smoke.py --dry-run` · `data/eval/cases.yaml` (10 сценария)
 
-**Следва (когато има повече данни):** user queries в `data/raw/user-queries/` · embeddings RAG · Phase 2 седмично меню
+**Следва:** user queries в `data/raw/user-queries/` (re-ingest) · Phase 2 седмично меню UI · сезонен календар · LangSmith (optional)
+
+**Готово:** vector RAG (Chroma или pgvector), dual-tier, eval smoke (`data/eval/cases.yaml`)
 
 Виж `docs/concept.md` за продуктовата концепция.

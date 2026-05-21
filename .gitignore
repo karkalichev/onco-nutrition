@@ -23,5 +23,7 @@ data/patient/
 
 # Keep template
 !data/raw/user-queries/TEMPLATE.md
+
+# local files internal use
 .DS_Store
 .todo.md

@@ -10,7 +10,7 @@ See [concept.md](concept.md) for product rationale.
 
 - **Backend:** Python
 - **LLM:** Anthropic API (Claude)
-- **RAG:** LangChain + Chroma + `paraphrase-multilingual-MiniLM-L12-v2` — **dual-tier retrieval** (metadata filter `tier`; keyword fallback)
+- **RAG:** LangChain + **Chroma** (default, local) or **PostgreSQL pgvector** + `paraphrase-multilingual-MiniLM-L12-v2` — **dual-tier retrieval** (metadata filter `tier`; keyword fallback)
 - **Data:** Tier 1 PDFs/guidelines + Tier 2 forum/interview text
 
 ## Knowledge tiers
@@ -124,7 +124,7 @@ src/
 ├── assistant.py     # orchestration
 ├── i18n.py          # BG + EN UI strings, locale detection
 ├── ingest/          # docs/references → chunks.jsonl
-├── retrieval/       # vector (Chroma) + keyword fallback, dual-tier
+├── retrieval/       # vector (Chroma | pgvector) + keyword fallback, dual-tier
 ├── prompts/         # dual-tier system prompt
 └── terminology.py   # normalize display text (sources unchanged)
 ```

@@ -35,9 +35,10 @@ pip install -r requirements.txt
 # 1. Build knowledge base
 python -m src.cli ingest
 
-# 2. Vector index (recommended; first run downloads embedding model)
+# 2. Vector index (Chroma default, or pgvector — see root README)
 python -m src.cli index
 # or: python -m src.cli ingest --index
+# pgvector: docker compose up -d && VECTOR_STORE=pgvector in .env
 
 # 3. Ask (needs ANTHROPIC_API_KEY in .env)
 python -m src.cli ask "What should I eat when nauseous after chemo?" \

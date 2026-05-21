@@ -21,6 +21,20 @@ def _database_url() -> str | None:
     return os.getenv("DATABASE_URL") or DATABASE_URL
 
 
+def ensure_vector_extension(conn: "psycopg.Connection") -> None:
+    """Enable pgvector before register_vector() or DDL using vector(...)."""
+    with conn.cursor() as cur:
+        try:
+            cur.execute("CREATE EXTENSION IF NOT EXISTS vector")
+        except Exception as exc:
+            raise RuntimeError(
+                "PostgreSQL pgvector extension is not available on this server. "
+                "Use the pgvector image: docker compose up -d "
+                "(see docker-compose.yml), or install pgvector on your Postgres instance."
+            ) from exc
+    conn.commit()
+
+
 @contextmanager
 def pg_connection() -> Iterator["psycopg.Connection"]:
     url = _database_url()
@@ -32,13 +46,14 @@ def pg_connection() -> Iterator["psycopg.Connection"]:
     from pgvector.psycopg import register_vector
 
     with psycopg.connect(url) as conn:
+        ensure_vector_extension(conn)
         register_vector(conn)
         yield conn
 
 
 def ensure_pgvector_schema(conn: "psycopg.Connection") -> None:
+    ensure_vector_extension(conn)
     with conn.cursor() as cur:
-        cur.execute("CREATE EXTENSION IF NOT EXISTS vector")
         cur.execute(
             f"""
             CREATE TABLE IF NOT EXISTS {PGVECTOR_TABLE} (

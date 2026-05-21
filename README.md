@@ -15,6 +15,64 @@ Every answer has **four sections**:
 
 Patient context (cycle day, symptoms, corticosteroids, weight, blood sugar) drives priority: `CALORIES_FIRST` | `BALANCED` | `BLOOD_SUGAR_AWARE`.
 
+## Pipeline
+
+```mermaid
+flowchart TB
+  subgraph sources["Sources (docs/references)"]
+    S1["Tier 1: clinical<br/>PDFs, onco.bg, CancerInfo"]
+    S2["Tier 2: peer<br/>forums, user-queries"]
+  end
+
+  subgraph offline["Offline (CLI)"]
+    ING["ingest<br/>tag tier + chunk"]
+    CHUNKS[("chunks.jsonl")]
+    IDX["index<br/>embed 384-dim"]
+    VS{{"VECTOR_STORE"}}
+    CHROMA[("Chroma<br/>data/processed/chroma")]
+    PG[("PostgreSQL<br/>pgvector table")]
+  end
+
+  subgraph runtime["Runtime (ask / Streamlit)"]
+    Q["User question"]
+    PC["PatientContext<br/>symptoms, cycle_day, glucose…"]
+    PR["derive_priority()"]
+    RS["ChunkStore<br/>RETRIEVAL auto|vector|keyword"]
+    RC["retrieve clinical k=5"]
+    RP["retrieve peer k=3"]
+    LLM["Anthropic Claude<br/>structured JSON"]
+    OUT["4 sections:<br/>clinical · peer · app · disclaimer"]
+  end
+
+  S1 --> ING
+  S2 --> ING
+  ING --> CHUNKS
+  CHUNKS --> IDX
+  IDX --> VS
+  VS -->|chroma| CHROMA
+  VS -->|pgvector| PG
+
+  Q --> RS
+  PC --> PR
+  PR --> LLM
+  CHUNKS -.->|keyword fallback| RS
+  CHROMA -.-> RS
+  PG -.-> RS
+  RS --> RC
+  RS --> RP
+  RC --> LLM
+  RP --> LLM
+  LLM --> OUT
+```
+
+| Step | Command | Output |
+|------|---------|--------|
+| Ingest | `python -m src.cli ingest` | `data/processed/chunks.jsonl` |
+| Index | `python -m src.cli index` | Chroma dir **or** `onco_chunk_embeddings` in Postgres |
+| Ask | `python -m src.cli ask "…"` | Markdown (CLI) or Streamlit UI |
+
+Details: [docs/architecture.md](docs/architecture.md) · ADR [002 — RAG](docs/decisions/002-rag-approach.md)
+
 ## Quick start
 
 ### 1. Environment
@@ -36,21 +94,32 @@ Reads `docs/references/` (PDFs + web pages) and writes `data/processed/chunks.js
 
 ### 3. Vector index (recommended for demo)
 
+Same embeddings for both backends: `paraphrase-multilingual-MiniLM-L12-v2` (384-dim; first `index` downloads ~400MB model). Without a vector index, `ask` falls back to keyword search.
+
+Pick one vector store via `VECTOR_STORE` in `.env` (default **`chroma`**).
+
+**A — Chroma (local, no database)**
+
 ```bash
+# VECTOR_STORE=chroma   # default
 python -m src.cli index
-# or in one step: python -m src.cli ingest --index
+# or: python -m src.cli ingest --index
 ```
 
-Builds a vector index with multilingual embeddings (first run downloads ~400MB model). Default backend is **Chroma** (`data/processed/chroma/`). Without an index, `ask` falls back to keyword search.
+Persists under `data/processed/chroma/`.
 
-**PostgreSQL + pgvector** (optional):
+**B — PostgreSQL + pgvector**
 
 ```bash
 docker compose up -d
-# .env: VECTOR_STORE=pgvector
-# DATABASE_URL=postgresql://onco:onco@localhost:5432/onco_nutrition
-python -m src.cli index
+# .env:
+#   VECTOR_STORE=pgvector
+#   DATABASE_URL=postgresql://onco:onco@localhost:5432/onco_nutrition
+python -m src.cli ingest   # if needed
+python -m src.cli index      # creates extension + table + embeddings
 ```
+
+Schema (`onco_chunk_embeddings`) is created automatically on `index` — no separate migration file.
 
 **Troubleshooting `index` (NumPy / PyTorch errors):** use Python 3.12 and reinstall pinned deps:
 
@@ -96,7 +165,7 @@ python -m src.cli ask "Suggest a weekly menu with local seasonal produce." \
 
 ## Phone / tablet demo (Streamlit)
 
-**Same as before** — laptop and phone on one **Wi‑Fi**, port **8081**. The UI did not change; only retrieval can be vector if you ran `index` (sidebar shows status).
+**Same as before** — laptop and phone on one **Wi‑Fi**, port **8081**. The UI did not change; retrieval is vector if you ran `index` (sidebar shows Chroma or `PostgreSQL/pgvector`).
 
 **Before first demo:**
 
@@ -121,6 +190,7 @@ streamlit run demo_app.py --server.address 0.0.0.0 --server.port 8081
 ```
 onco-nutrition/
 ├── demo_app.py              # Streamlit UI (port 8081)
+├── docker-compose.yml       # Postgres + pgvector (optional; for VECTOR_STORE=pgvector)
 ├── src/                     # Python package — see src/README.md
 ├── scripts/
 │   ├── run_demo_mobile.sh
@@ -131,7 +201,7 @@ onco-nutrition/
 │   ├── decisions/           # ADRs (LLM, RAG, two-tier)
 │   └── references/          # Sources (clinical + peer)
 ├── data/
-│   ├── processed/           # chunks.jsonl + chroma/ (generated)
+│   ├── processed/           # chunks.jsonl + chroma/ (generated; Chroma backend only)
 │   ├── eval/                # test scenarios
 │   └── raw/user-queries/    # patient interviews
 └── tests/
@@ -181,7 +251,7 @@ VECTOR_STORE=chroma                 # chroma | pgvector
 | [docs/concept.md](docs/concept.md) | Two-tier model, menu, patient context |
 | [docs/architecture.md](docs/architecture.md) | Pipeline, RAG, i18n |
 | [docs/decisions/001-llm-provider.md](docs/decisions/001-llm-provider.md) | Anthropic (Claude) |
-| [docs/decisions/002-rag-approach.md](docs/decisions/002-rag-approach.md) | LangChain + Chroma + multilingual embeddings |
+| [docs/decisions/002-rag-approach.md](docs/decisions/002-rag-approach.md) | LangChain + Chroma or pgvector + multilingual embeddings |
 | [docs/decisions/003-two-tier-knowledge.md](docs/decisions/003-two-tier-knowledge.md) | Clinical vs peer |
 | [src/README.md](src/README.md) | Code layout and commands |
 
@@ -195,7 +265,7 @@ python scripts/eval_smoke.py             # full run → data/eval/runs/
 ## MVP status
 
 - [x] Dual-tier RAG (clinical + peer)
-- [x] Vector RAG (LangChain + Chroma + multilingual embeddings) with keyword fallback
+- [x] Vector RAG (Chroma or PostgreSQL pgvector + multilingual embeddings) with keyword fallback
 - [x] Anthropic + structured JSON responses
 - [x] BG + EN
 - [x] PatientContext in CLI and Streamlit
