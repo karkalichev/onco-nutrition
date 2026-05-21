@@ -179,7 +179,7 @@ python -m src.cli ask "Suggest a weekly menu with local seasonal produce." \
 
 ## Phone / tablet demo (Streamlit)
 
-![Streamlit demo — EN UI, dual-tier answer (clinical + peer + meal plan)](docs/references/sources/demo-streamlit-en.png)
+![Streamlit demo — EN UI, dual-tier answer (clinical + peer + meal plan)](docs/references/sources/demo-streamlit-en.jpg)
 
 **Same as before** — laptop and phone on one **Wi‑Fi**, port **8081**. The UI did not change; retrieval is vector if you ran `index` (sidebar shows Chroma or `PostgreSQL/pgvector`).
 
