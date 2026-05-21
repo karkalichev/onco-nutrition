@@ -4,9 +4,10 @@ import json
 import re
 from pathlib import Path
 
-from src.config import CHUNKS_FILE, CLINICAL_TOP_K, PEER_TOP_K
+from src.config import CHUNKS_FILE
 from src.i18n import Locale
 from src.models import Chunk, Tier
+from src.retrieval.parallel import retrieve_dual_tier
 
 
 def _tokenize(text: str) -> set[str]:
@@ -49,6 +50,4 @@ class KeywordRetriever:
         return [c for c, s in scored if s > 0][:top_k]
 
     def retrieve(self, query: str, locale: Locale | None = None) -> tuple[list[Chunk], list[Chunk]]:
-        clinical = self.search(query, Tier.CLINICAL, CLINICAL_TOP_K, locale)
-        peer = self.search(query, Tier.PEER, PEER_TOP_K, locale)
-        return clinical, peer
+        return retrieve_dual_tier(self.search, query, locale)

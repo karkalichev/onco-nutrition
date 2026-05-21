@@ -2,6 +2,7 @@
 """CLI: ingest knowledge base and ask nutrition questions."""
 
 import argparse
+import json
 import sys
 
 from src.assistant import ask
@@ -44,7 +45,7 @@ def cmd_ask(args: argparse.Namespace) -> None:
     query = args.question
     locale = resolve_locale(query, args.lang)
     patient = _build_patient_context(args)
-    response = ask(query, locale=locale, patient=patient)
+    response = ask(query, locale=locale, patient=patient, verbose=args.verbose)
     print(response.render_markdown())
 
 
@@ -129,12 +130,31 @@ def main() -> None:
         "--city",
         help="City for seasonal/local produce, e.g. Sofia",
     )
+    p_ask.add_argument(
+        "-v",
+        "--verbose",
+        action="store_true",
+        help="Print timing breakdown to stderr (load, retrieve, LLM)",
+    )
     p_ask.set_defaults(func=cmd_ask)
+
+    argv = sys.argv[1:]
+    for arg in argv:
+        if arg.startswith("--symptoms") and arg != "--symptoms":
+            print(
+                f"Error: unknown flag {arg!r}. "
+                "Use: --symptoms nausea  (space between flag and value)",
+                file=sys.stderr,
+            )
+            sys.exit(2)
 
     args = parser.parse_args()
     try:
         args.func(args)
     except FileNotFoundError as exc:
+        print(f"Error: {exc}", file=sys.stderr)
+        sys.exit(1)
+    except json.JSONDecodeError as exc:
         print(f"Error: {exc}", file=sys.stderr)
         sys.exit(1)
 

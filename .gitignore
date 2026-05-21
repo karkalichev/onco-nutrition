@@ -24,3 +24,4 @@ data/patient/
 # Keep template
 !data/raw/user-queries/TEMPLATE.md
 .DS_Store
+.todo.md

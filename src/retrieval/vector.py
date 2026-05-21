@@ -4,12 +4,15 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from langchain_core.documents import Document
+
 from src.config import CHROMA_COLLECTION, CHROMA_DIR, CLINICAL_TOP_K, PEER_TOP_K
 from src.i18n import Locale
 from src.models import Chunk, Tier
 from src.retrieval.documents import document_to_chunk
 from src.retrieval.embeddings import get_embeddings
 from src.retrieval.index_build import chroma_ready
+from src.retrieval.parallel import retrieve_dual_tier
 
 if TYPE_CHECKING:
     from langchain_chroma import Chroma
@@ -23,6 +26,23 @@ def _language_boost(score: float, chunk_lang: str, locale: Locale | None) -> flo
     if chunk_lang not in (locale, "unknown"):
         return score * 0.9
     return score
+
+
+def _rank_chunks(
+    pairs: list[tuple[Chunk, float]],
+    top_k: int,
+) -> list[Chunk]:
+    pairs.sort(key=lambda x: x[1], reverse=True)
+    seen: set[str] = set()
+    results: list[Chunk] = []
+    for chunk, _ in pairs:
+        if chunk.id in seen:
+            continue
+        seen.add(chunk.id)
+        results.append(chunk)
+        if len(results) >= top_k:
+            break
+    return results
 
 
 class VectorRetriever:
@@ -49,6 +69,45 @@ class VectorRetriever:
             )
         return self._store
 
+    def embed_query(self, query: str) -> list[float]:
+        """Single embedding per user question (reuse for both tiers)."""
+        return self._get_store().embeddings.embed_query(query)
+
+    def search_with_vector(
+        self,
+        query_vector: list[float],
+        tier: Tier,
+        top_k: int,
+        locale: Locale | None = None,
+    ) -> list[Chunk]:
+        """Chroma query with precomputed embedding — no second embed call."""
+        store = self._get_store()
+        collection = store._collection
+        fetch_k = max(top_k * 2, top_k + 2)
+        result = collection.query(
+            query_embeddings=[query_vector],
+            n_results=fetch_k,
+            where={"tier": tier.value},
+            include=["documents", "metadatas", "distances"],
+        )
+
+        documents = (result.get("documents") or [[]])[0]
+        metadatas = (result.get("metadatas") or [[]])[0]
+        distances = (result.get("distances") or [[]])[0]
+        if not documents:
+            return []
+
+        scored: list[tuple[Chunk, float]] = []
+        for text, meta, distance in zip(documents, metadatas, distances):
+            if not meta:
+                continue
+            doc = Document(page_content=text or "", metadata=meta)
+            chunk = document_to_chunk(doc)
+            sim = 1.0 / (1.0 + float(distance))
+            scored.append((chunk, _language_boost(sim, chunk.language, locale)))
+
+        return _rank_chunks(scored, top_k)
+
     def search(
         self,
         query: str,
@@ -56,37 +115,15 @@ class VectorRetriever:
         top_k: int,
         locale: Locale | None = None,
     ) -> list[Chunk]:
-        store = self._get_store()
-        # Fetch extra candidates, then rerank with language preference
-        fetch_k = max(top_k * 2, top_k + 2)
-        pairs = store.similarity_search_with_score(
-            query,
-            k=fetch_k,
-            filter={"tier": tier.value},
-        )
-        if not pairs:
-            return []
-
-        # Chroma returns distance (lower = better); convert to similarity-like score
-        scored: list[tuple[Chunk, float]] = []
-        for doc, distance in pairs:
-            chunk = document_to_chunk(doc)
-            sim = 1.0 / (1.0 + float(distance))
-            scored.append((chunk, _language_boost(sim, chunk.language, locale)))
-
-        scored.sort(key=lambda x: x[1], reverse=True)
-        seen: set[str] = set()
-        results: list[Chunk] = []
-        for chunk, _ in scored:
-            if chunk.id in seen:
-                continue
-            seen.add(chunk.id)
-            results.append(chunk)
-            if len(results) >= top_k:
-                break
-        return results
+        """Single-tier search (embeds once per call)."""
+        return self.search_with_vector(self.embed_query(query), tier, top_k, locale)
 
     def retrieve(self, query: str, locale: Locale | None = None) -> tuple[list[Chunk], list[Chunk]]:
-        clinical = self.search(query, Tier.CLINICAL, CLINICAL_TOP_K, locale)
-        peer = self.search(query, Tier.PEER, PEER_TOP_K, locale)
-        return clinical, peer
+        query_vector = self.embed_query(query)
+        return retrieve_dual_tier(
+            lambda _q, tier, top_k, loc: self.search_with_vector(
+                query_vector, tier, top_k, loc
+            ),
+            query,
+            locale,
+        )

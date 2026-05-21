@@ -38,6 +38,16 @@ _EN_STEROID_WORD = re.compile(
     re.IGNORECASE,
 )
 
+# LLM sometimes fuses words in English output
+_EN_FUSED_WORDS: tuple[tuple[str, str], ...] = (
+    (",focus", ", focus"),
+    ("weightloss", "weight loss"),
+    ("forbreakfast", "for breakfast"),
+    ("andhoney", "and honey"),
+    ("amountsfrequently", "amounts frequently"),
+    ("CALORIES_FIRST,", "CALORIES_FIRST, "),
+)
+
 
 def _normalize_bg(text: str) -> str:
     for wrong, right in _BG_REPLACEMENTS:
@@ -56,6 +66,9 @@ def _normalize_bg(text: str) -> str:
 
 
 def _normalize_en(text: str) -> str:
+    for wrong, right in _EN_FUSED_WORDS:
+        text = text.replace(wrong, right)
+
     def _replace(match: re.Match[str]) -> str:
         word = match.group(1)
         if word.lower().endswith("s"):

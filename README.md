@@ -85,15 +85,27 @@ python -m src.cli ask "Suggest a weekly menu with local seasonal produce." \
 
 > **Location (Phase 2+):** `country` and `city` steer toward seasonal local produce. A curated produce calendar per region is not in the MVP yet — the model uses general knowledge; patients should verify market availability.
 
-### 5. Phone / tablet demo (Streamlit)
+## Phone / tablet demo (Streamlit)
 
-Laptop and phone on the **same Wi‑Fi**:
+**Same as before** — laptop and phone on one **Wi‑Fi**, port **8081**. The UI did not change; only retrieval can be vector if you ran `index` (sidebar shows status).
+
+**Before first demo:**
+
+1. `ingest` (and ideally `index` for better answers)
+2. `ANTHROPIC_API_KEY` in `.env`
 
 ```bash
+source venv/bin/activate
 ./scripts/run_demo_mobile.sh
 ```
 
-On your phone, open the URL from the terminal or sidebar, e.g. `http://192.168.x.x:8081`.
+The script runs `streamlit run demo_app.py` on `0.0.0.0:8081` and prints your LAN URL. On the phone open e.g. `http://192.168.x.x:8081` (also shown in the app **sidebar**).
+
+Alternative without the script:
+
+```bash
+streamlit run demo_app.py --server.address 0.0.0.0 --server.port 8081
+```
 
 ## Project layout
 
@@ -129,6 +141,7 @@ onco-nutrition/
 | `--comorbidity` | e.g. `diabetes` |
 | `--country` | e.g. `BG` — seasonal / local produce hint |
 | `--city` | e.g. `Sofia` |
+| `-v` / `--verbose` | Timing breakdown on stderr (load, retrieve, LLM) |
 
 ## Configuration
 

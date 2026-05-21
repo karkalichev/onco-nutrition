@@ -34,6 +34,8 @@ _SYSTEM_PROMPTS: dict[Locale, str] = {
 - Ако пациентът **отхвърля** конкретна храна (напр. банан гади) — предложи **заместител** със сходни ползи (калории, пектин, меко) без да настояваш за същата храна.
 - Ако в контекста има **country** / **city** — предпочитай сезонни местни плодове и зеленчуци за този регион; не измисляй екзотични продукти. Ако не си сигурен за сезона — кажи „проверете какво е налично на пазара“.
 
+Отговорът трябва да е САМО един валиден JSON обект — без markdown, без текст преди/след JSON.
+
 Върни JSON с полета:
 {
   "clinical": {
@@ -82,6 +84,8 @@ Menus, substitutes, local produce:
 - For **weekly** or **daily** menu questions — use app_suggestion.meals for a structured plan (day/meal) aligned with phase and symptoms.
 - If the patient **rejects** a specific food (e.g. banana causes nausea) — suggest a **substitute** with similar benefits (calories, pectin, soft texture); do not insist on the same food.
 - If context includes **country** / **city** — prefer seasonal local fruits and vegetables for that region; do not invent exotic items. If unsure about season — say "check what is available at your local market".
+
+Reply with ONLY one valid JSON object — no markdown, no text before or after the JSON.
 
 Return JSON with fields:
 {
