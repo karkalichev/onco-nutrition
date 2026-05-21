@@ -2,6 +2,12 @@
 .env
 venv/
 
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+
 # Raw user interview data (may contain sensitive info)
 data/raw/user-queries/*-session.md
 data/raw/user-queries/queries.json
