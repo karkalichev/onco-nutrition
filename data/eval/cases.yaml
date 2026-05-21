@@ -84,3 +84,40 @@ cases:
     corticosteroids: true
     expect_priority: BLOOD_SUGAR_AWARE
     notes: "If peer retrieved: conflict note; clinical wins; sugar caution"
+
+  - id: weekly_menu_en
+    locale: en
+    question: "Plan a 7-day menu for my chemo cycle — day 4 after infusion, still nauseous."
+    symptoms: [nausea]
+    cycle_day: 4
+    weight_trend: losing
+    country: BG
+    city: Sofia
+    expect_priority: CALORIES_FIRST
+    notes: "Structured meals in app_suggestion; phase-aware; local/seasonal if country set"
+
+  - id: daily_menu_en
+    locale: en
+    question: "What should I eat today? Light meals, cycle day 2, no appetite."
+    symptoms: [nausea, no_appetite]
+    cycle_day: 2
+    expect_priority: CALORIES_FIRST
+    notes: "Single-day plan; small frequent meals"
+
+  - id: banana_substitute_en
+    locale: en
+    question: "You suggested banana but banana makes me nauseous — what can I eat instead?"
+    symptoms: [nausea]
+    cycle_day: 2
+    weight_trend: losing
+    expect_priority: CALORIES_FIRST
+    notes: "Substitute with similar benefits (pectin, soft, calories); do not push banana"
+
+  - id: seasonal_local_bg
+    locale: en
+    question: "Suggest soft fruits for nausea this season — I'm in Sofia, Bulgaria."
+    symptoms: [nausea]
+    country: BG
+    city: Sofia
+    expect_priority: CALORIES_FIRST
+    notes: "Local seasonal produce; disclaimer if unsure; BG context in question"

@@ -29,6 +29,11 @@ _SYSTEM_PROMPTS: dict[Locale, str] = {
   - BALANCED: балансирано меню
 - В clinical.summary или app_suggestion обясни накратко ЗАЩО днешните правила са такива (1 изречение).
 
+Меню, заместители, локални продукти:
+- При въпрос за **седмично** или **дневно** меню — в app_suggestion.meals дай структуриран план (ден/хранене), съобразен с фазата и симптомите.
+- Ако пациентът **отхвърля** конкретна храна (напр. банан гади) — предложи **заместител** със сходни ползи (калории, пектин, меко) без да настояваш за същата храна.
+- Ако в контекста има **country** / **city** — предпочитай сезонни местни плодове и зеленчуци за този регион; не измисляй екзотични продукти. Ако не си сигурен за сезона — кажи „проверете какво е налично на пазара“.
+
 Върни JSON с полета:
 {
   "clinical": {
@@ -72,6 +77,11 @@ Terminology and language (required throughout the response):
   - BLOOD_SUGAR_AWARE: fewer simple sugars; protein + fiber; briefly explain link to corticosteroids/diabetes
   - BALANCED: balanced meals
 - In clinical.summary or app_suggestion, briefly explain WHY today's guidance differs (one sentence).
+
+Menus, substitutes, local produce:
+- For **weekly** or **daily** menu questions — use app_suggestion.meals for a structured plan (day/meal) aligned with phase and symptoms.
+- If the patient **rejects** a specific food (e.g. banana causes nausea) — suggest a **substitute** with similar benefits (calories, pectin, soft texture); do not insist on the same food.
+- If context includes **country** / **city** — prefer seasonal local fruits and vegetables for that region; do not invent exotic items. If unsure about season — say "check what is available at your local market".
 
 Return JSON with fields:
 {

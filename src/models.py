@@ -31,6 +31,8 @@ class PatientContext:
     neutropenia_risk: bool | None = None
     symptoms_today: list[str] = field(default_factory=list)
     dietary_restrictions: list[str] = field(default_factory=list)
+    country: str | None = None  # ISO or name, e.g. BG — for seasonal/local produce
+    city: str | None = None  # e.g. Sofia, Plovdiv
 
     _CALORIES_FIRST_SYMPTOMS = frozenset({
         "nausea",
@@ -76,6 +78,8 @@ class PatientContext:
             or self.neutropenia_risk is not None
             or self.symptoms_today
             or self.dietary_restrictions
+            or self.country
+            or self.city
         )
 
     def to_prompt_block(self, locale: Locale) -> str:
@@ -113,6 +117,10 @@ class PatientContext:
                 lines.append(f"symptoms_today: {', '.join(self.symptoms_today)}")
             if self.dietary_restrictions:
                 lines.append(f"dietary_restrictions: {', '.join(self.dietary_restrictions)}")
+            if self.country:
+                lines.append(f"country: {self.country}")
+            if self.city:
+                lines.append(f"city: {self.city}")
             return "\n".join(lines) + "\n"
 
         lines = ["[PATIENT_CONTEXT]", f"nutrition_priority: {priority}"]
@@ -140,6 +148,10 @@ class PatientContext:
             lines.append(f"симптоми_днес: {', '.join(self.symptoms_today)}")
         if self.dietary_restrictions:
             lines.append(f"диетични_ограничения: {', '.join(self.dietary_restrictions)}")
+        if self.country:
+            lines.append(f"държава: {self.country}")
+        if self.city:
+            lines.append(f"град: {self.city}")
         return "\n".join(lines) + "\n"
 
 

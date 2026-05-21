@@ -29,14 +29,14 @@ pip install -r requirements.txt
 python -m src.cli ingest
 
 # 2. Ask (needs ANTHROPIC_API_KEY in .env)
-python -m src.cli ask "Какво да ям при гадене след химио?" \
-  --symptoms nausea --cycle-day 2 --weight-trend losing
+python -m src.cli ask "What should I eat when nauseous after chemo?" \
+  --symptoms nausea --cycle-day 2 --weight-trend losing --lang en
 
-python -m src.cli ask "What should I eat when nauseous?" --lang en \
-  --symptoms nausea --cycle-day 2 --weight-trend losing
+python -m src.cli ask "What should I eat when nauseous after chemo?" \
+  --symptoms nausea --cycle-day 2 --weight-trend losing --lang bg
 
-python -m src.cli ask "Мога ли сладко?" --corticosteroids --glucose high_recently \
-  --comorbidity diabetes
+python -m src.cli ask "Can I eat sweets today?" --corticosteroids --glucose high_recently \
+  --comorbidity diabetes --lang en
 
 # 3. Eval smoke (priority checks + optional LLM runs)
 python scripts/eval_smoke.py --dry-run
@@ -61,7 +61,10 @@ python scripts/eval_smoke.py   # saves markdown to data/eval/runs/
 | `--treatment`            | `chemotherapy`                  |
 | `--comorbidity`          | `diabetes`                      |
 | `--dietary-restrictions` | `lactose_free`                  |
+| `--country`              | `BG`                            |
+| `--city`             | `Sofia`                         |
 
+Example questions (weekly menu, substitutes, seasonal): see root [README.md](../README.md#example-questions).
 
 ## Data flow
 

@@ -56,6 +56,13 @@ def test_derive_priority_diarrhea_symptom():
     assert ctx.derive_priority() == "CALORIES_FIRST"
 
 
+def test_to_prompt_block_includes_location():
+    ctx = PatientContext(country="BG", city="Sofia")
+    block = ctx.to_prompt_block("en")
+    assert "country: BG" in block
+    assert "city: Sofia" in block
+
+
 def test_to_prompt_block_empty_bg():
     block = PatientContext().to_prompt_block("bg")
     assert "няма подаден" in block

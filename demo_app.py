@@ -137,6 +137,10 @@ LABELS = {
         "glucose_opts": {"unknown": "не знам", "normal": "нормална", "high_recently": "висока напоследък"},
         "ui_lang": "Език на менюто",
         "wifi": "Телефонът и лаптопът трябва да са на **същия Wi‑Fi**.",
+        "country": "Държава (сезонни продукти)",
+        "city": "Град",
+        "country_ph": "BG",
+        "city_ph": "София",
     },
     "en": {
         "title": "Onco Nutrition — demo",
@@ -161,6 +165,10 @@ LABELS = {
         "glucose_opts": {"unknown": "unknown", "normal": "normal", "high_recently": "high recently"},
         "ui_lang": "Menu language",
         "wifi": "Phone and laptop must be on the **same Wi‑Fi**.",
+        "country": "Country (seasonal produce)",
+        "city": "City",
+        "country_ph": "BG",
+        "city_ph": "Sofia",
     },
 }
 
@@ -271,6 +279,12 @@ comorbidity = st.multiselect(
     format_func=lambda k: _opt_label("comorbidity", k),
 )
 
+loc_col1, loc_col2 = st.columns(2)
+with loc_col1:
+    country = st.text_input(_L("country"), placeholder=_L("country_ph"))
+with loc_col2:
+    city = st.text_input(_L("city"), placeholder=_L("city_ph"))
+
 cycle_day: int | None = None
 if cycle_raw.strip():
     try:
@@ -286,6 +300,8 @@ patient = PatientContext(
     weight_trend=weight_trend,  # type: ignore[arg-type]
     glucose=glucose,  # type: ignore[arg-type]
     symptoms_today=symptoms,
+    country=country.strip() or None,
+    city=city.strip() or None,
 )
 
 priority_key = patient.derive_priority()

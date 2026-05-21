@@ -20,6 +20,8 @@ def _build_patient_context(args: argparse.Namespace) -> PatientContext:
         glucose=args.glucose,
         symptoms_today=args.symptoms or [],
         dietary_restrictions=args.dietary_restrictions or [],
+        country=args.country,
+        city=args.city,
     )
 
 
@@ -94,6 +96,14 @@ def main() -> None:
         nargs="+",
         dest="dietary_restrictions",
         help="Allergies or diet restrictions",
+    )
+    p_ask.add_argument(
+        "--country",
+        help="Country for seasonal/local produce, e.g. BG",
+    )
+    p_ask.add_argument(
+        "--city",
+        help="City for seasonal/local produce, e.g. Sofia",
     )
     p_ask.set_defaults(func=cmd_ask)
 

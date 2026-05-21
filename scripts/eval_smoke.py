@@ -31,6 +31,8 @@ def _patient_from_case(case: dict) -> PatientContext:
         glucose=case.get("glucose", "unknown"),
         symptoms_today=case.get("symptoms") or [],
         dietary_restrictions=case.get("dietary_restrictions") or [],
+        country=case.get("country"),
+        city=case.get("city"),
     )
 
 

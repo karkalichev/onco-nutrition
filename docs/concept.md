@@ -181,6 +181,7 @@ AI асистент за хранене при онкологично лечен
 | **Конкретен режим / лекарства** | Кортикостероиди, таргетна терапия | дексаметазон дни 1–3, не само „химио“ |
 | **Съпътстващи** | Диабет, бъбрек, celiac | диабет тип 2 |
 | **Диетични ограничения** | Алергии, религия, vegan | без лактоза |
+| **Държава / град** | Сезонни местни плодове и зеленчуци | `BG`, `София` |
 
 ### Ниво C — медицински стойности (optional, self-reported)
 
@@ -240,9 +241,21 @@ ELIF phase == recovery AND symptoms == none:
   "today": {
     "symptoms": ["nausea", "no_appetite"],
     "phase_override": null
+  },
+  "locale": {
+    "country": "BG",
+    "city": "Sofia"
   }
 }
 ```
+
+**Локация и сезонност:** `country` + `city` насочват към местни, сезонно налични продукти. MVP подава полетата в prompt-а; **календар на произведение по регион** (структурирани данни) е Phase 2 — дотогава моделът използва общи знания + „проверете на пазара“.
+
+**Примерни въпроси (EN):**
+- Weekly menu: *Plan a 7-day menu for my chemo cycle — day 4, still nauseous.*
+- Daily menu: *What should I eat today? Cycle day 2, no appetite.*
+- Substitute: *You suggested banana but it makes me nauseous — what instead?*
+- Seasonal/local: *Soft fruits for nausea this season — Sofia, Bulgaria.*
 
 Фаза на цикъла може да се **изчисли** от `cycle_day` или да се **override-не** от пациента („днес се чувствам като след химио“).
 
