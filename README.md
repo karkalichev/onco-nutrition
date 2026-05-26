@@ -2,6 +2,8 @@
 
 AI assistant for **nutrition during cancer treatment** — with a clear split between clinical guidelines and patient-reported experience, in **Bulgarian and English**.
 
+![Streamlit demo](docs/references/sources/demo-streamlit-en.jpg)
+
 > General nutrition information, not medical advice. Discuss any diet changes with your oncologist or dietitian.
 
 ## Portfolio notice (read before use)
